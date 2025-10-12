@@ -6,10 +6,10 @@
 }
 
 :root {
-    /* 主色调 */
-    --primary-color: #6366f1;
-    --primary-dark: #4f46e5;
-    --primary-light: #818cf8;
+    /* 主色调 - 同济大学校徽蓝色 */
+    --primary-color: #1e40af;
+    --primary-dark: #1e3a8a;
+    --primary-light: #3b82f6;
     
     /* 辅助色 */
     --secondary-color: #f59e0b;

@@ -1,12 +1,12 @@
 {
-  "name": "FCA Website",
-  "short_name": "FCA",
-  "description": "复旦大学魔方社官方成绩记录系统",
+  "name": "TJCA Website",
+  "short_name": "TJCA",
+  "description": "同济大学魔方社官方成绩记录系统",
   "version": "1.0.0",
   "start_url": "/",
-  "display": "standalone",
+  "display": "browser",
   "background_color": "#ffffff",
-  "theme_color": "#6366f1",
+  "theme_color": "#1e40af",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "zh-CN",
@@ -14,7 +14,7 @@
   "categories": ["sports", "education", "productivity"],
   "icons": [
     {
-      "src": "assets/images/fdu.ico",
+      "src": "assets/images/tjca.ico",
       "sizes": "any",
       "type": "image/x-icon",
       "purpose": "any maskable"
@@ -24,15 +24,6 @@
 
   ],
   "shortcuts": [
-    {
-      "name": "FCA Records",
-      "short_name": "Records",
-      "description": "查看校记录",
-      "url": "/school-records.html",
-      "icons": [
-
-      ]
-    },
     {
       "name": "Weekly Contests",
       "short_name": "Contests",

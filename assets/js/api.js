@@ -7,7 +7,7 @@ import { showError, showSuccess } from './utils.js';
 
 // API 基础配置
 const API_CONFIG = {
-    baseURL: 'https://fcabackend.hzcubing.club', // Sealos 云函数 URL
+    baseURL: 'https://tjcaback.hzcubing.club', // Sealos 云函数 URL
     timeout: 10000,
     retryCount: 3
 };
@@ -221,7 +221,7 @@ export const contestsAPI = {
      */
     async getContests(params = {}) {
         try {
-            const response = await apiClient.get('/get-contests', params);
+            const response = await apiClient.get('/contests', params);
             return response.data || [];
         } catch (error) {
             showError('获取周赛记录失败: ' + error.message);
@@ -245,7 +245,7 @@ export const contestsAPI = {
      */
     async createContest(contest) {
         try {
-            const response = await apiClient.post('/create-contest', contest);
+            const response = await apiClient.post('/contests', contest);
             showSuccess('周赛记录创建成功');
             return response.data;
         } catch (error) {
@@ -262,7 +262,7 @@ export const contestsAPI = {
      */
     async updateContest(id, contest) {
         try {
-            const response = await apiClient.post('/update-contest', { _id: id, ...contest });
+            const response = await apiClient.put('/contests', { _id: id, ...contest });
             showSuccess('周赛记录更新成功');
             return response.data;
         } catch (error) {
@@ -278,7 +278,7 @@ export const contestsAPI = {
      */
     async deleteContest(id) {
         try {
-            const response = await apiClient.get(`/delete-contest?_id=${id}`);
+            const response = await apiClient.delete(`/contests?_id=${id}`);
             showSuccess('周赛记录删除成功');
             return response.data;
         } catch (error) {
@@ -380,7 +380,7 @@ export const mockAPI = {
 };
 
 // 真实 API 客户端
-const API_BASE_URL = 'https://fcabackend.hzcubing.club';
+const API_BASE_URL = 'https://tjcaback.hzcubing.club';
 
 export const realAPI = {
     /**
@@ -466,7 +466,7 @@ export const realAPI = {
      */
     async getContests(params = {}) {
         const queryString = new URLSearchParams(params).toString();
-        const endpoint = `get-contests${queryString ? `?${queryString}` : ''}`;
+        const endpoint = `contests${queryString ? `?${queryString}` : ''}`;
         return await this.request(endpoint);
     },
 
@@ -476,7 +476,7 @@ export const realAPI = {
      * @returns {Promise} 创建结果
      */
     async createContest(contestData) {
-        return await this.request('create-contest', {
+        return await this.request('contests', {
             method: 'POST',
             body: JSON.stringify(contestData)
         });
@@ -489,8 +489,8 @@ export const realAPI = {
      * @returns {Promise} 更新结果
      */
     async updateContest(id, contestData) {
-        return await this.request('update-contest', {
-            method: 'POST',
+        return await this.request('contests', {
+            method: 'PUT',
             body: JSON.stringify({ _id: id, ...contestData })
         });
     },
@@ -501,7 +501,9 @@ export const realAPI = {
      * @returns {Promise} 删除结果
      */
     async deleteContest(id) {
-        return await this.request(`delete-contest?_id=${id}`);
+        return await this.request(`contests?_id=${id}`, {
+            method: 'DELETE'
+        });
     },
 
 };
