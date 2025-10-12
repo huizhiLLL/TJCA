@@ -1,0 +1,3268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>管理后台 - FCA Website</title>
+    <meta name="description" content="FCA 管理后台">
+    <meta name="keywords" content="FCA,管理,后台,魔方">
+    
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="FCA">
+    
+    <!-- 图标 -->
+    <link rel="icon" type="image/x-icon" href="assets/images/fdu.ico">
+    
+    <!-- 样式文件 -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <!-- 管理后台专用样式 -->
+    <style>
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+        }
+        
+        .admin-header {
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .admin-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .admin-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+        
+        .admin-tabs {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-xl);
+            background: var(--gray-100);
+            padding: var(--spacing-xs);
+            border-radius: var(--radius-lg);
+            width: fit-content;
+        }
+        
+        .admin-tab {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .admin-tab:hover {
+            color: var(--text-primary);
+            background: var(--bg-primary);
+        }
+        
+        .admin-tab.active {
+            background: var(--primary-color);
+            color: var(--text-white);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .admin-content {
+            display: none;
+        }
+        
+        .admin-content.active {
+            display: block;
+        }
+        
+        .admin-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .admin-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        /* 多选框样式 */
+
+        .project-checkboxes {
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            background: var(--bg-primary);
+        }
+
+        .checkbox-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .checkbox-row:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 更多项目按钮样式 */
+        .more-projects-toggle {
+            display: flex;
+            align-items: center;
+            margin-left: var(--spacing-md);
+        }
+
+        .more-projects-toggle .btn {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .more-projects-toggle .btn:hover {
+            background: var(--primary-50);
+            border-color: var(--primary-300);
+            color: var(--primary-700);
+        }
+
+        .more-projects-toggle .btn i {
+            transition: transform 0.3s ease;
+        }
+
+        .more-projects-toggle .btn.expanded i {
+            transform: rotate(180deg);
+        }
+
+        /* 隐藏项目区域样式 */
+        .more-projects {
+            margin-top: var(--spacing-sm);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .more-projects.hidden {
+            max-height: 0;
+            margin-top: 0;
+            opacity: 0;
+        }
+
+        .more-projects.visible {
+            max-height: 200px;
+            margin-top: var(--spacing-sm);
+            opacity: 1;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            cursor: pointer;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .checkbox-item:hover {
+            background: var(--gray-50);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin: 0;
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary-color);
+        }
+
+        .checkbox-item span {
+            font-size: 0.875rem;
+            color: var(--text-primary);
+        }
+
+        .checkbox-item:has(input:checked) {
+            background: var(--primary-color);
+            color: var(--text-white);
+        }
+
+        .checkbox-item:has(input:checked) span {
+            color: var(--text-white);
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        /* 周赛表单特殊样式 */
+        #add-contest-form .form-row {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+
+        #add-contest-form .form-group:first-child {
+            flex: 0 0 200px; /* 周次输入框固定宽度 */
+        }
+
+        #add-contest-form .form-group:last-child {
+            flex: 0 0 180px; /* 日期输入框固定宽度 */
+        }
+        
+        .btn {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--text-white);
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--text-primary);
+            border: 1px solid var(--gray-300);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--gray-200);
+        }
+        
+        .btn-danger {
+            background: var(--danger-color);
+            color: var(--text-white);
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .btn-success {
+            background: var(--accent-color);
+            color: var(--text-white);
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: var(--spacing-lg);
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: var(--spacing-sm) var(--spacing-md);
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .data-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .data-table td {
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+        
+        .data-table tr:hover {
+            background: var(--gray-50);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .status-badge {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-inactive {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        
+        .status-pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .stat-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: var(--spacing-2xl);
+            color: var(--text-secondary);
+        }
+        
+        .error {
+            text-align: center;
+            padding: var(--spacing-2xl);
+            color: var(--danger-color);
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: var(--spacing-sm);
+            border-radius: var(--radius-md);
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--gray-100);
+            color: var(--text-primary);
+        }
+
+        /* 项目选择样式 */
+        .project-selection {
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+        }
+
+        .project-selection label {
+            font-weight: 600;
+            margin-right: var(--spacing-sm);
+        }
+
+        .project-selection select {
+            width: 200px;
+        }
+
+        /* 快速录入区域样式 */
+        .quick-entry-section {
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-200);
+        }
+
+        .quick-entry-section h4 {
+            margin: 0 0 var(--spacing-md) 0;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .quick-entry-form .form-row {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: end;
+        }
+
+        .quick-entry-form .form-group {
+            flex: 1;
+        }
+
+        .quick-entry-form .form-group:last-child {
+            flex: none;
+        }
+
+        /* 已录入成绩区域样式 */
+        .entered-scores-section {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .scores-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .scores-header h4 {
+            margin: 0;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        #toggle-edit-mode {
+            transition: all 0.3s ease;
+        }
+
+        #toggle-edit-mode.active {
+            background: var(--primary-color);
+            color: var(--text-white);
+            border-color: var(--primary-color);
+        }
+
+        .entered-scores-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            background: var(--bg-primary);
+        }
+
+        .score-item {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-bottom: 1px solid var(--gray-200);
+            transition: background-color 0.2s ease;
+            min-height: 48px;
+        }
+
+        .score-item:last-child {
+            border-bottom: none;
+        }
+
+        .score-item:hover {
+            background: var(--gray-50);
+        }
+
+        .score-item.editing {
+            background: var(--primary-50);
+        }
+
+        .score-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .score-player {
+            font-weight: 600;
+            min-width: 100px;
+        }
+
+        .player-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+            line-height: 1.2;
+        }
+
+        .player-meta {
+            display: flex;
+            gap: var(--spacing-xs);
+            align-items: center;
+        }
+
+        .round-badge {
+            background: var(--primary-100);
+            color: var(--primary-700);
+            padding: 1px 4px;
+            border-radius: var(--radius-sm);
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .time-badge {
+            background: var(--gray-100);
+            color: var(--text-secondary);
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+        }
+
+        .score-times {
+            display: flex;
+            gap: var(--spacing-xs);
+            flex-wrap: wrap;
+        }
+
+        .score-time {
+            background: var(--gray-100);
+            padding: 1px 4px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+        }
+
+        .score-time.best {
+            background: var(--success-100);
+            color: var(--success-700);
+        }
+
+        .score-time.worst {
+            background: var(--danger-100);
+            color: var(--danger-700);
+        }
+
+        .score-actions {
+            display: flex;
+            gap: var(--spacing-xs);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .score-item:hover .score-actions {
+            opacity: 1;
+        }
+
+        .score-item.edit-mode .score-actions {
+            opacity: 1;
+        }
+
+        .score-actions .btn {
+            padding: 2px 6px;
+            font-size: 0.8rem;
+            min-width: 28px;
+            height: 24px;
+        }
+
+        .score-actions .btn-danger {
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .score-actions .btn-danger:hover {
+            opacity: 1;
+        }
+
+        .score-edit-form {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            flex: 1;
+        }
+
+        .score-edit-form input {
+            padding: var(--spacing-xs);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+        }
+
+        .score-edit-form .player-name-edit {
+            min-width: 80px;
+        }
+
+        .score-edit-form .times-edit {
+            flex: 1;
+        }
+
+        .score-edit-form .round-edit {
+            min-width: 80px;
+        }
+
+        /* 周赛编辑模态框样式 */
+        .contest-edit-info {
+            background: var(--gray-50);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .contest-basic-info {
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+        }
+
+        .contest-basic-info h4 {
+            margin: 0 0 var(--spacing-md) 0;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .contest-projects {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .contest-projects h4 {
+            margin: 0 0 var(--spacing-md) 0;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .projects-list {
+            margin-bottom: var(--spacing-lg);
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            background: var(--bg-primary);
+        }
+
+        .project-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .project-item:last-child {
+            border-bottom: none;
+        }
+
+        .project-item:hover {
+            background: var(--gray-50);
+        }
+
+        .project-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .project-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .project-stats {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .project-actions {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+
+        .project-actions .btn {
+            padding: 2px 6px;
+            font-size: 0.8rem;
+            min-width: 24px;
+            height: 24px;
+        }
+
+        .add-project-section {
+            padding: var(--spacing-md);
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-200);
+        }
+
+        .add-project-section h5 {
+            margin: 0 0 var(--spacing-sm) 0;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .modal-body {
+            padding: var(--spacing-lg);
+        }
+
+        /* 社交媒体链接样式 */
+        .social-links {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: var(--text-white);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .social-link:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .social-link i {
+            font-size: 1.2rem;
+        }
+
+        .score-entry-info {
+            background: var(--gray-50);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .score-entry-info h4 {
+            margin: 0 0 var(--spacing-xs) 0;
+            color: var(--primary-color);
+        }
+
+        .score-entry-info p {
+            margin: 0;
+            color: var(--text-secondary);
+        }
+
+        .player-input-group {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            align-items: center;
+        }
+
+        .player-input-group input {
+            flex: 1;
+        }
+
+        .player-input-group .btn-danger {
+            padding: var(--spacing-sm);
+            min-width: 40px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: flex-end;
+            margin-top: var(--spacing-lg);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--gray-200);
+        }
+
+        /* 项目列表样式 */
+        .project-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .project-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm);
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-200);
+        }
+
+        .project-name {
+            font-weight: 500;
+            color: var(--text-primary);
+            min-width: 60px;
+        }
+
+        .project-count {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            min-width: 50px;
+        }
+
+        /* 帮助提示样式 */
+        .btn-group-with-help {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .help-icon-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .help-icon {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            cursor: help;
+            transition: all 0.3s ease;
+        }
+
+        .help-icon:hover {
+            color: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        .help-tooltip {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            right: 0;
+            background: var(--gray-900);
+            color: var(--text-white);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            z-index: 1000;
+            min-width: 300px;
+            max-width: 350px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .help-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 20px;
+            border: 6px solid transparent;
+            border-top-color: var(--gray-900);
+        }
+
+        .help-icon:hover + .help-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tooltip-content h4 {
+            margin: 0 0 var(--spacing-sm) 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-white);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: var(--spacing-xs);
+        }
+
+        .format-examples {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .format-example {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-xs) 0;
+            font-size: 0.8rem;
+        }
+
+        .format-project {
+            font-weight: 500;
+            color: var(--primary-200);
+            min-width: 60px;
+        }
+
+        .format-sample {
+            font-family: monospace;
+            color: var(--gray-300);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+        }
+
+        .format-note {
+            font-size: 0.75rem;
+            color: var(--gray-400);
+            margin-top: var(--spacing-xs);
+            padding-top: var(--spacing-xs);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        /* 项目标签页样式 */
+        .project-tabs-container {
+            margin-top: var(--spacing-lg);
+        }
+
+        .project-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            border-bottom: 2px solid var(--gray-200);
+            padding-bottom: var(--spacing-sm);
+        }
+
+        .project-tab {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--gray-100);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .project-tab:hover {
+            background: var(--gray-200);
+            border-color: var(--gray-400);
+        }
+
+        .project-tab.active {
+            background: var(--primary-color);
+            color: var(--text-white);
+            border-color: var(--primary-color);
+        }
+
+        .project-content {
+            min-height: 300px;
+        }
+
+        .project-panel {
+            display: none;
+        }
+
+        .project-panel.active {
+            display: block;
+        }
+
+        .project-panel h4 {
+            margin: 0 0 var(--spacing-md) 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .project-panel h4 i {
+            font-size: 1.25rem;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: var(--spacing-md);
+            }
+            
+            .admin-tabs {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .data-table {
+                font-size: 0.75rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: var(--spacing-md);
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .help-tooltip {
+                position: fixed;
+                left: var(--spacing-md);
+                right: var(--spacing-md);
+                bottom: 20%;
+                min-width: auto;
+                max-width: none;
+                width: calc(100vw - 2 * var(--spacing-md));
+            }
+
+            .help-tooltip::after {
+                display: none;
+            }
+
+            .btn-group-with-help {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--spacing-xs);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-cube"></i>
+                FCA Website
+            </a>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    首页
+                </a>
+                <a href="school-records.html" class="nav-link">
+                    <i class="fas fa-trophy"></i>
+                    校记录
+                </a>
+                <a href="weekly-contests.html" class="nav-link">
+                    <i class="fas fa-calendar-week"></i>
+                    周赛记录
+                </a>
+                <a href="admin.html" class="nav-link active">
+                    <i class="fas fa-cog"></i>
+                    管理后台
+                </a>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="main-content">
+        <div class="admin-container">
+            <!-- 管理后台头部 -->
+            <div class="admin-header">
+                <h1 class="admin-title">
+                    <i class="fas fa-cog"></i>
+                    管理后台
+                </h1>
+                <p class="admin-subtitle">管理系统数据、用户权限和系统设置</p>
+            </div>
+
+
+            <!-- 管理标签页 -->
+            <div class="admin-tabs">
+                <!-- <button class="admin-tab active" data-tab="records">
+                    <i class="fas fa-trophy"></i>
+                    校记录管理
+                </button> -->
+                <button class="admin-tab active" data-tab="contests">
+                    <i class="fas fa-calendar-week"></i>
+                    周赛管理
+                </button>
+                <!-- <button class="admin-tab" data-tab="users">
+                    <i class="fas fa-users"></i>
+                    用户管理
+                </button>
+                <button class="admin-tab" data-tab="settings">
+                    <i class="fas fa-cog"></i>
+                    系统设置
+                </button> -->
+            </div>
+
+            
+
+            <!-- 周赛管理 -->
+            <div id="contests-tab" class="admin-content active">
+                <div class="admin-card">
+                    <h3>
+                        <i class="fas fa-plus"></i>
+                        添加周赛记录
+                    </h3>
+                    <form id="add-contest-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contest-week">周次</label>
+                                <input type="text" id="contest-week" name="contest-week" class="form-control" required placeholder="第1周">
+                            </div>
+                            <div class="form-group">
+                                <label for="contest-date">日期</label>
+                                <input type="date" id="contest-date" name="contest-date" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="contest-projects">项目（可多选）</label>
+                            <div class="project-checkboxes">
+                                <!-- 第一行：三阶 二阶 三阶单手 四阶 -->
+                                <div class="checkbox-row">
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="contest-projects" value="三阶">
+                                        <span>三阶</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="contest-projects" value="二阶">
+                                        <span>二阶</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="contest-projects" value="四阶">
+                                        <span>四阶</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="contest-projects" value="三阶单手">
+                                        <span>三阶单手</span>
+                                    </label>
+                                </div>
+                                
+                                <!-- 第二行：五阶 六阶 七阶 -->
+                                <div class="checkbox-row">
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="contest-projects" value="五阶">
+                                        <span>五阶</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="contest-projects" value="六阶">
+                                        <span>六阶</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="contest-projects" value="七阶">
+                                        <span>七阶</span>
+                                    </label>
+                                </div>
+                                
+                                <!-- 第三行：斜转 金字塔 魔表 SQ1 五魔方 -->
+                                <div class="checkbox-row">
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="contest-projects" value="斜转">
+                                        <span>斜转</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="contest-projects" value="金字塔">
+                                        <span>金字塔</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="contest-projects" value="魔表">
+                                        <span>魔表</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="contest-projects" value="SQ1">
+                                        <span>SQ1</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="contest-projects" value="五魔方">
+                                        <span>五魔方</span>
+                                    </label>
+                                    
+                                    <!-- 更多项目按钮 -->
+                                    <div class="more-projects-toggle">
+                                        <button type="button" class="btn btn-sm btn-outline" onclick="toggleMoreProjects()">
+                                            <i class="fas fa-chevron-down" id="more-projects-icon"></i>
+                                            <span id="more-projects-text">更多</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- 隐藏的项目 -->
+                                <div class="more-projects hidden" id="more-projects" style="display: none;">
+                                    <div class="checkbox-row">
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="contest-projects" value="最少步">
+                                            <span>最少步</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="contest-projects" value="三阶盲拧">
+                                            <span>三阶盲拧</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="contest-projects" value="四阶盲拧">
+                                            <span>四阶盲拧</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="contest-projects" value="五阶盲拧">
+                                            <span>五阶盲拧</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                添加周赛
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="admin-card">
+                    <h3>
+                        <i class="fas fa-list"></i>
+                        周赛记录列表
+                    </h3>
+                    <div id="contests-list">
+                        <div class="loading">
+                            <div class="loading"></div>
+                            <p>加载中...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 周赛编辑模态框 -->
+                <div id="contest-edit-modal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>
+                                <i class="fas fa-edit"></i>
+                                编辑周赛
+                            </h3>
+                            <button class="modal-close" onclick="closeContestEditModal()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="contest-edit-info">
+                                <h4 id="contest-edit-week"></h4>
+                                <p id="contest-edit-date"></p>
+                            </div>
+                            
+                            <!-- 隐藏的周赛ID -->
+                            <input type="hidden" id="contest-edit-id">
+                            
+                            <!-- 基本信息编辑 -->
+                            <div class="contest-basic-info">
+                                <h4>
+                                    <i class="fas fa-info-circle"></i>
+                                    基本信息
+                                </h4>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="edit-week">周次：</label>
+                                        <input type="text" id="edit-week" class="form-control" placeholder="如：第1周">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit-date">日期：</label>
+                                        <input type="date" id="edit-date" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 项目管理 -->
+                            <div class="contest-projects">
+                                <h4>
+                                    <i class="fas fa-cube"></i>
+                                    项目管理
+                                </h4>
+                                <div class="projects-list" id="projects-list">
+                                    <!-- 动态显示现有项目 -->
+                                </div>
+                                
+                                <!-- 添加新项目 -->
+                                <div class="add-project-section">
+                                    <h5>添加新项目</h5>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <select id="new-project-select" class="form-control">
+                                                <option value="">选择项目</option>
+                                                <option value="三阶">三阶</option>
+                                                <option value="二阶">二阶</option>
+                                                <option value="四阶">四阶</option>
+                                                <option value="五阶">五阶</option>
+                                                <option value="六阶">六阶</option>
+                                                <option value="七阶">七阶</option>
+                                                <option value="三阶盲拧">三阶盲拧</option>
+                                                <option value="四阶盲拧">四阶盲拧</option>
+                                                <option value="五阶盲拧">五阶盲拧</option>
+                                                <option value="最少步">最少步</option>
+                                                <option value="三阶单手">三阶单手</option>
+                                                <option value="魔表">魔表</option>
+                                                <option value="五魔方">五魔方</option>
+                                                <option value="金字塔">金字塔</option>
+                                                <option value="斜转">斜转</option>
+                                                <option value="SQ1">SQ1</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-primary" onclick="addProjectToContest()">
+                                                <i class="fas fa-plus"></i>
+                                                添加项目
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-primary" onclick="saveContestEdit()">
+                                    <i class="fas fa-save"></i>
+                                    保存修改
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="closeContestEditModal()">
+                                    <i class="fas fa-times"></i>
+                                    取消
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 成绩录入模态框 -->
+                <div id="score-entry-modal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>
+                                <i class="fas fa-edit"></i>
+                                录入成绩
+                            </h3>
+                            <button class="modal-close" onclick="closeScoreEntryModal()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="score-entry-info">
+                                <h4 id="score-entry-week"></h4>
+                                <p id="score-entry-date"></p>
+                            </div>
+                            
+                            <!-- 隐藏的周赛ID -->
+                            <input type="hidden" id="score-entry-contest-id">
+                            
+                            <!-- 项目选择 -->
+                            <div class="project-selection">
+                                <label for="project-select">选择项目：</label>
+                                <select id="project-select" class="form-control">
+                                    <!-- 动态生成项目选项 -->
+                                </select>
+                                <div class="project-info-display" id="project-info-display" style="margin-top: var(--spacing-sm); padding: var(--spacing-sm); background: var(--gray-50); border-radius: var(--radius-sm); font-size: 0.875rem; color: var(--text-secondary);">
+                                    <!-- 项目配置信息将在这里显示 -->
+                                </div>
+                            </div>
+                            
+                            <!-- 快速录入区域 -->
+                            <div class="quick-entry-section">
+                                <h4>
+                                    <i class="fas fa-plus"></i>
+                                    快速录入
+                                </h4>
+                                <div class="quick-entry-form">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="player-name-input">选手姓名：</label>
+                                            <input type="text" id="player-name-input" class="form-control" placeholder="请输入选手姓名">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="round-input">轮数：</label>
+                                            <select id="round-input" class="form-control">
+                                                <option value="1">第1轮</option>
+                                                <option value="2">第2轮</option>
+                                                <option value="3">第3轮</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="times-input">成绩（用空格分隔）：</label>
+                                            <input type="text" id="times-input" class="form-control" placeholder="如：5.89 6.12 5.45 6.01 5.78 ">
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="btn-group-with-help">
+                                                <button type="button" class="btn btn-primary" onclick="quickAddScore()">
+                                                    <i class="fas fa-save"></i>
+                                                    录入成绩
+                                                </button>
+                                                <div class="help-icon-container">
+                                                    <i class="fas fa-question-circle help-icon" id="score-format-help"></i>
+                                                    <div class="help-tooltip" id="score-format-tooltip">
+                                                        <div class="tooltip-content">
+                                                            <h4>快速录入格式</h4>
+                                                            <div class="format-examples">
+                                                                <div class="format-example">
+                                                                    <span class="format-project">三阶</span>
+                                                                    <span class="format-sample">5.89 6.12+ DNF 5.45 6.01</span>
+                                                                </div>
+                                                                
+                                                                <div class="format-example">
+                                                                    <span class="format-project">四阶</span>
+                                                                    <span class="format-sample">45.67 1:02.32 50.12 36.93 DNF</span>
+                                                                </div>
+                                                                <div class="format-example">
+                                                                    <span class="format-project">六阶</span>
+                                                                    <span class="format-sample">2:45.67 3:02.34 2:55.12</span>
+                                                                </div>
+                                                                <div class="format-example">
+                                                                    <span class="format-project">盲拧</span>
+                                                                    <span class="format-sample">1:25.67 DNF 1:35.12</span>
+                                                                </div>
+                                                                <div class="format-example">
+                                                                    <span class="format-project">最少步</span>
+                                                                    <span class="format-sample">25 30 28</span>
+                                                                </div>
+                                                                <div class="format-note">
+                                                                    支持：普通成绩、+2惩罚(+)、DNF、长时间(分:秒)
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 已录入成绩显示区域 -->
+                            <div class="entered-scores-section">
+                                <div class="scores-header">
+                                    <h4>
+                                        <i class="fas fa-list"></i>
+                                        已录入成绩
+                                    </h4>
+                                    <button type="button" class="btn btn-sm btn-outline" id="toggle-edit-mode" onclick="toggleEditMode()">
+                                        <i class="fas fa-edit"></i>
+                                        编辑
+                                    </button>
+                                </div>
+                                <div id="entered-scores-list" class="entered-scores-list">
+                                    <!-- 动态显示已录入的成绩 -->
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeScoreEntryModal()">
+                                    <i class="fas fa-times"></i>
+                                    关闭
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 校记录管理 -->
+            <div id="records-tab" class="admin-content active">
+                <div class="admin-card">
+                    <h3>
+                        <i class="fas fa-plus"></i>
+                        添加校记录
+                    </h3>
+                    <form id="add-record-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="record-project">项目</label>
+                                <select id="record-project" class="form-control" required>
+                                    <option value="">选择项目</option>
+                                    <option value="三阶">三阶</option>
+                                    <option value="二阶">二阶</option>
+                                    <option value="四阶">四阶</option>
+                                    <option value="五阶">五阶</option>
+                                    <option value="六阶">六阶</option>
+                                    <option value="七阶">七阶</option>
+                                    <option value="三阶盲拧">三阶盲拧</option>
+                                    <option value="四阶盲拧">四阶盲拧</option>
+                                    <option value="五阶盲拧">五阶盲拧</option>
+                                    <option value="最少步">最少步</option>
+                                    <option value="三阶单手">三阶单手</option>
+                                    <option value="魔表">魔表</option>
+                                    <option value="五魔方">五魔方</option>
+                                    <option value="金字塔">金字塔</option>
+                                    <option value="斜转">斜转</option>
+                                    <option value="SQ1">SQ1</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="record-name">姓名</label>
+                                <input type="text" id="record-name" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="record-grade">年级</label>
+                                <input type="text" id="record-grade" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="record-single">单次成绩</label>
+                                <input type="text" id="record-single" class="form-control" placeholder="如: 5.89">
+                            </div>
+                            <div class="form-group">
+                                <label for="record-average">平均成绩</label>
+                                <input type="text" id="record-average" class="form-control" placeholder="如: 7.98">
+                            </div>
+                            <div class="form-group">
+                                <label for="record-date">日期</label>
+                                <input type="date" id="record-date" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="record-competition">比赛名称</label>
+                            <input type="text" id="record-competition" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                添加记录
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="admin-card">
+                    <h3>
+                        <i class="fas fa-list"></i>
+                        校记录列表
+                    </h3>
+                    <div id="records-list">
+                        <div class="loading">
+                            <div class="loading"></div>
+                            <p>加载中...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 用户管理 -->
+            <div id="users-tab" class="admin-content">
+                <div class="admin-card">
+                    <h3>
+                        <i class="fas fa-users"></i>
+                        用户管理
+                    </h3>
+                    <div class="error">
+                        <i class="fas fa-tools" style="font-size: 2rem; margin-bottom: 16px; display: block; color: var(--primary-color);"></i>
+                        <h3 style="margin: 0 0 8px 0; color: var(--text-primary);">功能开发中</h3>
+                        <p style="margin: 0; font-size: 0.9rem;">用户管理功能正在开发中，敬请期待！</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 系统设置 -->
+            <div id="settings-tab" class="admin-content">
+                <div class="admin-card">
+                    <h3>
+                        <i class="fas fa-cog"></i>
+                        系统设置
+                    </h3>
+                    <div class="error">
+                        <i class="fas fa-tools" style="font-size: 2rem; margin-bottom: 16px; display: block; color: var(--primary-color);"></i>
+                        <h3 style="margin: 0 0 8px 0; color: var(--text-primary);">功能开发中</h3>
+                        <p style="margin: 0; font-size: 0.9rem;">系统设置功能正在开发中，敬请期待！</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>FCA Website</h4>
+                    <p>复旦大学魔方社网站</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="index.html">首页</a></li>
+                        <li><a href="school-records.html">校记录</a></li>
+                        <li><a href="weekly-contests.html">周赛记录</a></li>
+                        <li><a href="admin.html">管理后台</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>联系我们</h4>
+                    <p>如有问题，请联系FCA管理员</p>
+                    <div class="social-links">
+                        <a href="https://space.bilibili.com/1299547652" target="_blank" class="social-link" title="Bilibili">
+                            <i class="fab fa-bilibili"></i>
+                        </a>
+                        <a href="https://github.com/huizhiLLL/FCA-WeeklyContests" target="_blank" class="social-link" title="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FCA Website. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script type="module" src="assets/js/app.js"></script>
+    <script type="module" src="assets/js/pwa.js"></script>
+    <script type="module">
+        // 管理后台专用脚本
+        import { recordsAPI, contestsAPI, contestScoresAPI } from './assets/js/api.js';
+        import { showSuccess, showError, animateCounter } from './assets/js/utils.js';
+        import { getProjectConfig, getProjectAttempts, getProjectScoringMethod, getProjectTimeFormat, getAllProjects, getProjectsByCategory } from './assets/js/projectConfig.js';
+        import { parseTimeString, validateTimeForProject, getTimeInputPlaceholder, formatTimeDisplay } from './assets/js/timeUtils.js';
+        import { processPlayerResult, calculateProjectRanking, validatePlayerScores, generateScoreSummary } from './assets/js/scoringUtils.js';
+
+        class AdminManager {
+            constructor() {
+                this.currentTab = 'contests';
+                this.editMode = false; // 编辑模式状态
+                this.contests = []; // 初始化周赛数组
+                this.records = []; // 初始化记录数组
+                this.init();
+            }
+
+            async init() {
+                this.bindEvents();
+                this.loadRecords();
+                this.loadContests();
+                this.switchTab('contests'); // 默认显示周赛管理标签页
+                this.bindScoreEntryEvents();
+                this.bindContestEditEvents();
+            }
+
+
+            animateStat(elementId, value) {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    animateCounter(element, 0, value, 1000);
+                }
+            }
+
+            // 绑定成绩录入相关事件
+            bindScoreEntryEvents() {
+                // 项目选择变化事件
+                document.addEventListener('change', (e) => {
+                    if (e.target.id === 'project-select') {
+                        const contestId = document.getElementById('score-entry-contest-id').value;
+                        const projectName = e.target.value;
+                        
+                        if (contestId && projectName) {
+                            this.loadEnteredScores(contestId, projectName);
+                            this.updateProjectInfo(projectName);
+                            this.updateTimesInputPlaceholder(projectName);
+                        }
+                    }
+                });
+            }
+
+            // 更新项目信息显示
+            updateProjectInfo(projectName) {
+                const infoDisplay = document.getElementById('project-info-display');
+                if (!infoDisplay || !projectName) return;
+                
+                const config = getProjectConfig(projectName);
+                
+                infoDisplay.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                        <i class="fas fa-info-circle"></i>
+                        <span><strong>${config.displayName}</strong>: ${config.description}</span>
+                    </div>
+                    <div style="margin-top: var(--spacing-xs); font-size: 0.8rem;">
+                        成绩数量: ${config.attempts}把 | 
+                        计分方式: ${this.getScoringMethodDisplay(config.scoringMethod)} | 
+                        时间格式: ${this.getTimeFormatDisplay(config.timeFormat)}
+                    </div>
+                `;
+            }
+
+            // 获取计分方式显示文本
+            getScoringMethodDisplay(method) {
+                const methods = {
+                    'single': '最佳单次',
+                    'mo3': '3次平均',
+                    'ao5': '5次去头尾平均'
+                };
+                return methods[method] || method;
+            }
+
+            // 获取时间格式显示文本
+            getTimeFormatDisplay(format) {
+                const formats = {
+                    'standard': '标准时间',
+                    'extended': '长时间格式',
+                    'moves': '步数'
+                };
+                return formats[format] || format;
+            }
+
+            // 更新时间输入框的提示文本
+            updateTimesInputPlaceholder(projectName) {
+                const timesInput = document.getElementById('times-input');
+                if (timesInput) {
+                    timesInput.placeholder = getTimeInputPlaceholder(projectName);
+                }
+            }
+
+            // 绑定周赛编辑相关事件
+            bindContestEditEvents() {
+                // 新项目选择变化事件
+                document.addEventListener('change', (e) => {
+                    if (e.target.id === 'new-project-select') {
+                        this.updateAddProjectButton();
+                    }
+                });
+            }
+
+            // 更新添加项目按钮状态
+            updateAddProjectButton() {
+                const select = document.getElementById('new-project-select');
+                const button = document.querySelector('button[onclick="addProjectToContest()"]');
+                const selectedProject = select.value;
+                const existingProjects = Array.from(document.querySelectorAll('.project-name')).map(el => el.textContent);
+                
+                if (selectedProject && !existingProjects.includes(selectedProject)) {
+                    button.disabled = false;
+                    button.classList.remove('btn-secondary');
+                    button.classList.add('btn-primary');
+                } else {
+                    button.disabled = true;
+                    button.classList.remove('btn-primary');
+                    button.classList.add('btn-secondary');
+                }
+            }
+
+            // 切换编辑模式
+            toggleEditMode() {
+                this.editMode = !this.editMode;
+                const toggleBtn = document.getElementById('toggle-edit-mode');
+                const scoresList = document.getElementById('entered-scores-list');
+                
+                if (this.editMode) {
+                    toggleBtn.classList.add('active');
+                    toggleBtn.innerHTML = '<i class="fas fa-check"></i> 完成';
+                    scoresList.classList.add('edit-mode');
+                } else {
+                    toggleBtn.classList.remove('active');
+                    toggleBtn.innerHTML = '<i class="fas fa-edit"></i> 编辑';
+                    scoresList.classList.remove('edit-mode');
+                }
+                
+                // 重新渲染成绩列表以更新按钮显示
+                this.refreshScoresList();
+            }
+
+            // 刷新成绩列表
+            async refreshScoresList() {
+                const contestId = document.getElementById('score-entry-contest-id').value;
+                const projectSelect = document.getElementById('project-select');
+                
+                if (contestId && projectSelect.value) {
+                    await this.loadEnteredScores(contestId, projectSelect.value);
+                }
+            }
+
+            bindEvents() {
+                // 标签页切换
+                document.querySelectorAll('.admin-tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        const tabName = e.currentTarget.dataset.tab;
+                        this.switchTab(tabName);
+                    });
+                });
+
+                // 添加校记录表单
+                const addRecordForm = document.getElementById('add-record-form');
+                if (addRecordForm) {
+                    addRecordForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        this.addRecord();
+                    });
+                }
+
+                // 添加周赛表单
+                const addContestForm = document.getElementById('add-contest-form');
+                if (addContestForm) {
+                    addContestForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        this.addContest();
+                    });
+                }
+            }
+
+            switchTab(tabName) {
+                // 更新标签状态
+                document.querySelectorAll('.admin-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+                // 更新内容显示
+                document.querySelectorAll('.admin-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+
+                this.currentTab = tabName;
+
+                // 加载对应数据
+                if (tabName === 'records') {
+                    this.loadRecords();
+                } else if (tabName === 'contests') {
+                    this.loadContests();
+                }
+            }
+
+            async loadRecords() {
+                const recordsList = document.getElementById('records-list');
+                if (!recordsList) return;
+
+                try {
+                    recordsList.innerHTML = '<div class="loading"><div class="loading"></div><p>加载中...</p></div>';
+                    
+                    const response = await recordsAPI.getRecords();
+                    const records = response.data || [];
+                    this.records = records; // 保存到实例变量
+                    
+                    this.renderRecords(records);
+                } catch (error) {
+                    recordsList.innerHTML = '<div class="error">加载失败: ' + error.message + '</div>';
+                }
+            }
+
+            renderRecords(records) {
+                const recordsList = document.getElementById('records-list');
+                if (!recordsList) return;
+
+                if (records.length === 0) {
+                    recordsList.innerHTML = '<div class="error">暂无记录</div>';
+                    return;
+                }
+
+                const tableHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>项目</th>
+                                <th>姓名</th>
+                                <th>年级</th>
+                                <th>单次</th>
+                                <th>平均</th>
+                                <th>日期</th>
+                                <th>比赛</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${records.map(record => `
+                                <tr>
+                                    <td>${record.project}</td>
+                                    <td>${record.name}</td>
+                                    <td>${record.grade}</td>
+                                    <td>${record.single || '-'}</td>
+                                    <td>${record.average || '-'}</td>
+                                    <td>${record.date}</td>
+                                    <td>${record.competition}</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-secondary" onclick="adminManager.editRecord('${record._id}')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger" onclick="adminManager.deleteRecord('${record._id}')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+
+                recordsList.innerHTML = tableHTML;
+            }
+
+            async loadContests() {
+                const contestsList = document.getElementById('contests-list');
+                if (!contestsList) return;
+
+                try {
+                    contestsList.innerHTML = '<div class="loading"><div class="loading"></div><p>加载中...</p></div>';
+                    
+                    const contests = await contestsAPI.getContests();
+                    this.contests = contests; // 保存到实例变量
+                    this.renderContests(contests);
+                } catch (error) {
+                    contestsList.innerHTML = '<div class="error">加载失败: ' + error.message + '</div>';
+                }
+            }
+
+            renderContests(contests) {
+                const contestsList = document.getElementById('contests-list');
+                if (!contestsList) return;
+
+                if (!contests || contests.length === 0) {
+                    contestsList.innerHTML = '<div class="error">暂无记录</div>';
+                    return;
+                }
+
+                const tableHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>周次</th>
+                                <th>日期</th>
+                                <th>项目数量</th>
+                                <th>总参赛人数</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${contests.map(contest => `
+                                <tr>
+                                    <td>${contest.week || '未知'}</td>
+                                    <td>${contest.date || '未知'}</td>
+                                    <td>${(contest.contests || []).length}个项目</td>
+                                    <td>${this.calculateUniqueParticipants(contest)}人</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-primary" onclick="adminManager.openScoreEntryModal('${contest._id || ''}')">
+                                                <i class="fas fa-edit"></i>
+                                                录入成绩
+                                            </button>
+                                            <button class="btn btn-secondary" onclick="adminManager.editContest('${contest._id || ''}')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger" onclick="adminManager.deleteContest('${contest._id || ''}')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+
+                contestsList.innerHTML = tableHTML;
+            }
+
+            async addRecord() {
+                const form = document.getElementById('add-record-form');
+                const formData = new FormData(form);
+                
+                const recordData = {
+                    project: formData.get('record-project') || document.getElementById('record-project').value,
+                    name: formData.get('record-name') || document.getElementById('record-name').value,
+                    grade: formData.get('record-grade') || document.getElementById('record-grade').value,
+                    single: formData.get('record-single') || document.getElementById('record-single').value,
+                    average: formData.get('record-average') || document.getElementById('record-average').value,
+                    date: formData.get('record-date') || document.getElementById('record-date').value,
+                    competition: formData.get('record-competition') || document.getElementById('record-competition').value
+                };
+
+                try {
+                    await recordsAPI.createRecord(recordData);
+                    form.reset();
+                    this.loadRecords();
+                } catch (error) {
+                    // 错误已在 API 中处理
+                }
+            }
+
+            async addContest() {
+                const form = document.getElementById('add-contest-form');
+                const formData = new FormData(form);
+                
+                const week = formData.get('contest-week') || document.getElementById('contest-week').value;
+                const date = formData.get('contest-date') || document.getElementById('contest-date').value;
+                
+                // 获取选中的项目
+                const selectedProjects = [];
+                const projectCheckboxes = form.querySelectorAll('input[name="contest-projects"]:checked');
+                projectCheckboxes.forEach(checkbox => {
+                    selectedProjects.push(checkbox.value);
+                });
+                
+                // 验证必要参数
+                if (!week || !date) {
+                    showError('请填写周次和日期');
+                    return;
+                }
+                
+                if (selectedProjects.length === 0) {
+                    showError('请至少选择一个项目');
+                    return;
+                }
+                
+                // 为每个选中的项目创建比赛数据
+                const contests = selectedProjects.map(project => ({
+                    project: project,
+                    results: [] // 初始为空数组，后续可以添加选手成绩
+                }));
+                
+                const contestData = {
+                    week: week,
+                    date: date,
+                    contests: contests
+                };
+
+                try {
+                    await contestsAPI.createContest(contestData);
+                    showSuccess(`周赛记录创建成功！包含 ${selectedProjects.length} 个项目：${selectedProjects.join('、')}`);
+                    form.reset();
+                    this.loadContests();
+                } catch (error) {
+                    // 错误已在 API 中处理
+                }
+            }
+
+            async editRecord(id) {
+                showError('编辑功能开发中');
+            }
+
+            async deleteRecord(id) {
+                if (confirm('确定要删除这条记录吗？')) {
+                    try {
+                        await recordsAPI.deleteRecord(id);
+                        this.loadRecords();
+                    } catch (error) {
+                        // 错误已在 API 中处理
+                    }
+                }
+            }
+
+            async editContest(id) {
+                try {
+                    // 查找周赛数据
+                    const contest = this.contests.find(c => c._id === id);
+                    if (!contest) {
+                        showError('周赛记录不存在');
+                        return;
+                    }
+
+                    // 打开编辑模态框
+                    this.openContestEditModal(contest);
+                } catch (error) {
+                    console.error('编辑周赛失败:', error);
+                    showError('编辑周赛失败: ' + error.message);
+                }
+            }
+
+            // 打开周赛编辑模态框
+            openContestEditModal(contest) {
+                const modal = document.getElementById('contest-edit-modal');
+                const weekElement = document.getElementById('contest-edit-week');
+                const dateElement = document.getElementById('contest-edit-date');
+                const contestIdInput = document.getElementById('contest-edit-id');
+                const weekInput = document.getElementById('edit-week');
+                const dateInput = document.getElementById('edit-date');
+
+                // 设置基本信息
+                weekElement.textContent = contest.week || '未知周次';
+                dateElement.textContent = contest.date || '未知日期';
+                contestIdInput.value = contest._id || '';
+                weekInput.value = contest.week || '';
+                
+                // 设置日期（转换为YYYY-MM-DD格式）
+                if (contest.date) {
+                    const date = new Date(contest.date);
+                    if (!isNaN(date.getTime())) {
+                        dateInput.value = date.toISOString().split('T')[0];
+                    }
+                }
+
+                // 渲染项目列表
+                this.renderContestProjects(contest);
+
+                // 显示模态框
+                modal.classList.add('show');
+            }
+
+            // 渲染周赛项目列表
+            renderContestProjects(contest) {
+                const projectsList = document.getElementById('projects-list');
+                const contests = contest.contests || [];
+
+                if (contests.length === 0) {
+                    projectsList.innerHTML = '<div class="no-data">暂无项目</div>';
+                    return;
+                }
+
+                projectsList.innerHTML = contests.map(contest => {
+                    // 计算该项目的唯一参赛人数
+                    const uniqueParticipants = new Set();
+                    if (contest.results && Array.isArray(contest.results)) {
+                        contest.results.forEach(result => {
+                            if (result.name && result.name.trim()) {
+                                uniqueParticipants.add(result.name.trim());
+                            }
+                        });
+                    }
+                    
+                    return `
+                        <div class="project-item" data-project="${contest.project}">
+                            <div class="project-info">
+                                <div class="project-name">${contest.project}</div>
+                                <div class="project-stats">
+                                    参赛人数: ${uniqueParticipants.size}人
+                                </div>
+                            </div>
+                            <div class="project-actions">
+                                <!-- 眼睛按钮已隐藏 -->
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // 查看项目成绩
+            viewProjectScores(project) {
+                // 这里可以打开一个查看成绩的模态框
+                showError('查看成绩功能开发中');
+            }
+
+            // 更新周赛数据
+            async updateContestData(contestId, updatedData) {
+                try {
+                    // 调用API更新周赛
+                    await contestsAPI.updateContest(contestId, updatedData);
+                    
+                    // 重新加载周赛列表
+                    await this.loadContests();
+                    
+                    // 关闭编辑模态框
+                    closeContestEditModal();
+                    
+                    showSuccess('周赛更新成功');
+                } catch (error) {
+                    console.error('更新周赛失败:', error);
+                    showError('更新周赛失败: ' + error.message);
+                }
+            }
+
+            async deleteContest(id) {
+                if (confirm('确定要删除这条周赛记录吗？')) {
+                    try {
+                        await contestsAPI.deleteContest(id);
+                        this.loadContests();
+                    } catch (error) {
+                        // 错误已在 API 中处理
+                    }
+                }
+            }
+
+            // 打开成绩录入模态框
+            async openScoreEntryModal(contestId) {
+                try {
+                    // 获取周赛数据
+                    const contests = await contestsAPI.getContests();
+                    const contest = contests.find(c => c._id === contestId);
+                    
+                    if (!contest) {
+                        showError('周赛记录不存在');
+                        return;
+                    }
+
+                    // 设置模态框信息
+                    document.getElementById('score-entry-week').textContent = contest.week;
+                    document.getElementById('score-entry-date').textContent = contest.date;
+                    document.getElementById('score-entry-contest-id').value = contestId;
+
+                    // 生成项目选择下拉框
+                    this.renderProjectSelect(contest);
+
+                    // 加载已录入的成绩
+                    await this.loadEnteredScores(contestId, contest.contests[0]?.project || '');
+
+                    // 显示模态框
+                    const modal = document.getElementById('score-entry-modal');
+                    modal.classList.add('show');
+                } catch (error) {
+                    showError('打开成绩录入失败: ' + error.message);
+                }
+            }
+
+            // 渲染项目选择下拉框
+            renderProjectSelect(contest) {
+                const projectSelect = document.getElementById('project-select');
+                projectSelect.innerHTML = '';
+                
+                contest.contests.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project.project;
+                    
+                    // 显示项目名称和配置信息
+                    const config = getProjectConfig(project.project);
+                    option.textContent = `${config.displayName} (${config.attempts}把 - ${this.getScoringMethodDisplay(config.scoringMethod)})`;
+                    projectSelect.appendChild(option);
+                });
+                
+                // 默认选择第一个项目
+                if (contest.contests.length > 0) {
+                    projectSelect.value = contest.contests[0].project;
+                    // 更新项目信息显示
+                    this.updateProjectInfo(contest.contests[0].project);
+                    this.updateTimesInputPlaceholder(contest.contests[0].project);
+                }
+            }
+
+            // 加载已录入的成绩
+            async loadEnteredScores(contestId, project) {
+                try {
+                    const contests = await contestsAPI.getContests();
+                    const contest = contests.find(c => c._id === contestId);
+                    
+                    if (!contest) return;
+                    
+                    const projectData = contest.contests.find(c => c.project === project);
+                    const results = projectData ? projectData.results || [] : [];
+                    
+                    this.renderEnteredScores(results);
+                } catch (error) {
+                    console.error('加载已录入成绩失败:', error);
+                    this.renderEnteredScores([]);
+                }
+            }
+
+            // 渲染已录入的成绩列表
+            renderEnteredScores(results) {
+                const scoresList = document.getElementById('entered-scores-list');
+                
+                if (results.length === 0) {
+                    scoresList.innerHTML = `
+                        <div style="padding: var(--spacing-lg); text-align: center; color: var(--text-secondary);">
+                            <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: var(--spacing-sm); display: block;"></i>
+                            <p>暂无已录入的成绩</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // 按提交时间排序，最新的在上面
+                const sortedResults = [...results].sort((a, b) => {
+                    const timeA = new Date(a.submittedAt || a.enteredAt || 0);
+                    const timeB = new Date(b.submittedAt || b.enteredAt || 0);
+                    return timeB - timeA;
+                });
+                
+                scoresList.innerHTML = sortedResults.map((result, index) => this.generateScoreItem(result, index)).join('');
+            }
+
+            // 生成成绩项HTML
+            generateScoreItem(result, index) {
+                const times = result.times || [];
+                
+                // 获取当前选择的项目类型
+                const projectSelect = document.getElementById('project-select');
+                const projectName = projectSelect ? projectSelect.value : '';
+                const config = getProjectConfig(projectName);
+                
+                // 对成绩进行排序，DNF排最后，其他按时间排序
+                const sortedTimes = [...times].sort((a, b) => {
+                    // 如果都是对象（带状态），按时间排序
+                    if (typeof a === 'object' && typeof b === 'object') {
+                        if (a.status === 'dnf' && b.status === 'dnf') return 0;
+                        if (a.status === 'dnf') return 1;
+                        if (b.status === 'dnf') return -1;
+                        return (a.time || 0) - (b.time || 0);
+                    }
+                    // 兼容旧格式
+                    const timeA = typeof a === 'string' ? parseFloat(a.replace(':', '.')) : a;
+                    const timeB = typeof b === 'string' ? parseFloat(b.replace(':', '.')) : b;
+                    return timeA - timeB;
+                });
+                
+                // 格式化提交时间
+                const submittedAt = result.submittedAt ? new Date(result.submittedAt) : new Date();
+                const timeStr = submittedAt.toLocaleString('zh-CN', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                return `
+                    <div class="score-item" data-index="${index}">
+                        <div class="score-info">
+                            <div class="score-player">
+                                <div class="player-name">${result.name}</div>
+                                <div class="player-meta">
+                                    <span class="round-badge">第${result.round || 1}轮</span>
+                                </div>
+                            </div>
+                            <div class="score-times">
+                                ${times.map(time => {
+                                    // 只有AO5项目才标记最好和最差成绩
+                                    const isBest = config.scoringMethod === 'ao5' && time === sortedTimes[0] && 
+                                                  !(typeof time === 'object' && time.status === 'dnf');
+                                    const isWorst = config.scoringMethod === 'ao5' && time === sortedTimes[sortedTimes.length - 1] && 
+                                                   sortedTimes.filter(t => !(typeof t === 'object' && t.status === 'dnf')).length > 1;
+                                    
+                                    // 处理带状态的成绩显示
+                                    let displayTime = '';
+                                    if (typeof time === 'object' && time.status) {
+                                        displayTime = time.display;
+                                    } else {
+                                        // 兼容旧格式
+                                        displayTime = this.formatTime(time, projectName);
+                                    }
+                                    
+                                    // 只有去头尾平均（AO5）才加括号
+                                    if (config.scoringMethod === 'ao5' && (isBest || isWorst)) {
+                                        displayTime = `(${displayTime})`;
+                                    }
+                                    
+                                    // 只有AO5项目才应用best/worst样式
+                                    const rankClass = config.scoringMethod === 'ao5' ? 
+                                                    (isBest ? 'best' : isWorst ? 'worst' : '') : '';
+                                    
+                                    return `
+                                        <span class="score-time ${rankClass}">
+                                            ${displayTime}
+                                        </span>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                        <div class="score-actions">
+                            ${this.editMode ? `
+                                <button class="btn btn-sm btn-outline" onclick="editScore(${index})" title="编辑成绩">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteScore(${index})" title="删除成绩">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            ` : `
+                                <button class="btn btn-sm btn-outline" onclick="editScore(${index})" title="编辑成绩" style="opacity: 0;">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteScore(${index})" title="删除成绩" style="opacity: 0;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 格式化时间显示（使用新的时间工具）
+            formatTime(time, projectName) {
+                const config = getProjectConfig(projectName);
+                return formatTimeDisplay(time, config.timeFormat === 'moves');
+            }
+
+            // 渲染项目标签页
+            renderProjectTabs(contest) {
+                const projectTabs = document.getElementById('project-tabs');
+                const projectContent = document.getElementById('project-content');
+                
+                // 清空内容
+                projectTabs.innerHTML = '';
+                projectContent.innerHTML = '';
+
+                // 生成标签页
+                contest.contests.forEach((project, index) => {
+                    const tabId = `project-tab-${index}`;
+                    const panelId = `project-panel-${index}`;
+                    
+                    // 创建标签
+                    const tab = document.createElement('div');
+                    tab.className = `project-tab ${index === 0 ? 'active' : ''}`;
+                    tab.id = tabId;
+                    tab.textContent = project.project;
+                    tab.onclick = () => this.switchProjectTab(index);
+                    projectTabs.appendChild(tab);
+
+                    // 创建内容面板
+                    const panel = document.createElement('div');
+                    panel.className = `project-panel ${index === 0 ? 'active' : ''}`;
+                    panel.id = panelId;
+                    panel.innerHTML = `
+                        <h4>
+                            <i class="fas fa-cube"></i>
+                            ${project.project} 成绩录入
+                        </h4>
+                        <form class="score-entry-form" data-project="${project.project}">
+                            <div class="form-group">
+                                <label>参赛选手成绩</label>
+                                <div class="player-inputs">
+                                    ${this.generatePlayerInputs(project.results || [])}
+                                </div>
+                                <button type="button" class="btn btn-outline" onclick="addPlayerInputToProject('${project.project}')">
+                                    <i class="fas fa-plus"></i>
+                                    添加选手
+                                </button>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    保存成绩
+                                </button>
+                            </div>
+                        </form>
+                    `;
+                    projectContent.appendChild(panel);
+                });
+            }
+
+            // 生成选手输入框
+            generatePlayerInputs(results) {
+                if (results && results.length > 0) {
+                    return results.map((result, index) => this.generatePlayerInputGroup(result.name, result.times, index)).join('');
+                } else {
+                    // 默认添加3个空输入框
+                    let html = '';
+                    for (let i = 0; i < 3; i++) {
+                        html += this.generatePlayerInputGroup('', [], i);
+                    }
+                    return html;
+                }
+            }
+
+            // 生成单个选手输入组
+            generatePlayerInputGroup(name = '', times = [], index = 0) {
+                return `
+                    <div class="player-input-group">
+                        <input type="text" placeholder="选手姓名" value="${name}" class="form-control player-name">
+                        <input type="text" placeholder="成绩1" value="${times[0] || ''}" class="form-control player-time">
+                        <input type="text" placeholder="成绩2" value="${times[1] || ''}" class="form-control player-time">
+                        <input type="text" placeholder="成绩3" value="${times[2] || ''}" class="form-control player-time">
+                        <input type="text" placeholder="成绩4" value="${times[3] || ''}" class="form-control player-time">
+                        <input type="text" placeholder="成绩5" value="${times[4] || ''}" class="form-control player-time">
+                        <button type="button" class="btn btn-danger" onclick="removePlayerInput(this)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            }
+
+            // 切换项目标签页
+            switchProjectTab(index) {
+                // 移除所有活动状态
+                document.querySelectorAll('.project-tab').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.project-panel').forEach(panel => panel.classList.remove('active'));
+                
+                // 激活选中的标签和面板
+                document.getElementById(`project-tab-${index}`).classList.add('active');
+                document.getElementById(`project-panel-${index}`).classList.add('active');
+            }
+
+            // 添加选手输入框
+            addPlayerInput(projectName) {
+                const activePanel = document.querySelector('.project-panel.active');
+                if (activePanel) {
+                    const playerInputs = activePanel.querySelector('.player-inputs');
+                    if (playerInputs) {
+                        const newInputGroup = this.generatePlayerInputGroup('', [], playerInputs.children.length);
+                        playerInputs.insertAdjacentHTML('beforeend', newInputGroup);
+                    }
+                }
+            }
+
+            // 计算唯一参赛人数
+            calculateUniqueParticipants(contest) {
+                if (!contest || !contest.contests) return 0;
+                
+                const allParticipants = new Set();
+                
+                // 遍历所有项目，收集所有不同的选手名字
+                contest.contests.forEach(project => {
+                    if (project.results && Array.isArray(project.results)) {
+                        project.results.forEach(result => {
+                            if (result.name && result.name.trim()) {
+                                allParticipants.add(result.name.trim());
+                            }
+                        });
+                    }
+                });
+                
+                return allParticipants.size;
+            }
+
+            // 验证成绩格式（使用新的时间工具）
+            validateTimesFormat(timesInput, projectName) {
+                if (!timesInput.trim()) {
+                    return { valid: false, message: '请输入成绩' };
+                }
+                
+                const config = getProjectConfig(projectName);
+                
+                // 解析成绩
+                const times = timesInput.split(/\s+/).filter(time => time.trim());
+                if (times.length === 0) {
+                    return { valid: false, message: '请输入有效的成绩' };
+                }
+                
+                // 检查成绩数量
+                if (times.length > config.attempts) {
+                    return { valid: false, message: `${projectName}最多只能输入${config.attempts}个成绩` };
+                }
+                
+                // 解析每个成绩
+                const parsedTimes = [];
+                for (let i = 0; i < times.length; i++) {
+                    const time = times[i].trim();
+                    if (!time) continue;
+                    
+                    const parsed = validateTimeForProject(time, projectName);
+                    if (!parsed.valid) {
+                        return { valid: false, message: `第${i + 1}个成绩格式无效：${parsed.error}` };
+                    }
+                    parsedTimes.push(parsed);
+                }
+                
+                return { valid: true, times: parsedTimes };
+            }
+
+
+            // 快速录入成绩
+            async quickAddScore() {
+                const playerName = document.getElementById('player-name-input').value.trim();
+                const timesInput = document.getElementById('times-input').value.trim();
+                const roundInput = document.getElementById('round-input').value;
+                const projectSelect = document.getElementById('project-select');
+                const contestId = document.getElementById('score-entry-contest-id').value;
+                const projectName = projectSelect.value;
+                
+                if (!playerName) {
+                    showError('请输入选手姓名');
+                    return;
+                }
+                
+                if (!projectName) {
+                    showError('请选择项目');
+                    return;
+                }
+                
+                // 验证成绩格式（传入项目名称）
+                const validation = this.validateTimesFormat(timesInput, projectName);
+                if (!validation.valid) {
+                    showError(validation.message);
+                    return;
+                }
+                
+                const parsedTimes = validation.times;
+                
+                try {
+                    // 获取当前项目的所有成绩
+                    const contests = await contestsAPI.getContests();
+                    const contest = contests.find(c => c._id === contestId);
+                    const projectData = contest.contests.find(c => c.project === projectSelect.value);
+                    const currentResults = projectData ? projectData.results || [] : [];
+                    
+                    // 检查选手是否已存在（同一轮次）
+                    const existingIndex = currentResults.findIndex(r => r.name === playerName && r.round == roundInput);
+                    const newResult = {
+                        name: playerName,
+                        times: parsedTimes,
+                        round: parseInt(roundInput),
+                        submittedAt: new Date().toISOString(),
+                        submittedBy: 'admin'
+                    };
+                    
+                    if (existingIndex >= 0) {
+                        // 更新现有选手
+                        currentResults[existingIndex] = newResult;
+                    } else {
+                        // 添加新选手
+                        currentResults.push(newResult);
+                    }
+                    
+                    // 提交到数据库
+                    await contestScoresAPI.submitScores(contestId, projectSelect.value, currentResults);
+                    
+                    // 清空输入框
+                    document.getElementById('player-name-input').value = '';
+                    document.getElementById('times-input').value = '';
+                    
+                    // 刷新已录入成绩列表
+                    await this.loadEnteredScores(contestId, projectSelect.value);
+                    
+                    showSuccess('成绩录入成功');
+                } catch (error) {
+                    showError('录入成绩失败: ' + error.message);
+                }
+            }
+
+            // 编辑成绩
+            editScore(index) {
+                const scoreItem = document.querySelector(`[data-index="${index}"]`);
+                if (!scoreItem) return;
+                
+                const scoreInfo = scoreItem.querySelector('.score-info');
+                const scoreActions = scoreItem.querySelector('.score-actions');
+                
+                // 获取当前数据
+                const playerName = scoreInfo.querySelector('.player-name').textContent;
+                const roundBadge = scoreInfo.querySelector('.round-badge');
+                const currentRound = roundBadge ? roundBadge.textContent.match(/\d+/)[0] : '1';
+                
+                // 获取成绩数据（支持状态格式）
+                const times = Array.from(scoreInfo.querySelectorAll('.score-time')).map(span => {
+                    const text = span.textContent.replace(/[()]/g, '').trim();
+                    return text;
+                });
+                
+                // 创建编辑表单
+                const editForm = document.createElement('div');
+                editForm.className = 'score-edit-form';
+                editForm.innerHTML = `
+                    <input type="text" class="player-name-edit" value="${playerName}" placeholder="选手姓名">
+                    <select class="round-edit">
+                        <option value="1" ${currentRound == 1 ? 'selected' : ''}>第1轮</option>
+                        <option value="2" ${currentRound == 2 ? 'selected' : ''}>第2轮</option>
+                        <option value="3" ${currentRound == 3 ? 'selected' : ''}>第3轮</option>
+                    </select>
+                    <input type="text" class="times-edit" value="${times.join(' ')}" placeholder="成绩（用空格分隔）">
+                                    <small class="form-text text-muted">
+                                        悬停录入按钮旁的帮助图标查看格式
+                                    </small>
+                    <button class="btn btn-sm btn-primary" onclick="saveScoreEdit(${index})">
+                        <i class="fas fa-save"></i>
+                    </button>
+                    <button class="btn btn-sm btn-secondary" onclick="cancelScoreEdit(${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                // 替换内容
+                scoreItem.classList.add('editing');
+                scoreInfo.style.display = 'none';
+                scoreActions.style.display = 'none';
+                scoreItem.insertBefore(editForm, scoreActions);
+            }
+
+            // 保存成绩编辑
+            async saveScoreEdit(index) {
+                const scoreItem = document.querySelector(`[data-index="${index}"]`);
+                if (!scoreItem) return;
+                
+                const editForm = scoreItem.querySelector('.score-edit-form');
+                const playerName = editForm.querySelector('.player-name-edit').value.trim();
+                const timesInput = editForm.querySelector('.times-edit').value.trim();
+                const roundInput = editForm.querySelector('.round-edit').value;
+                const projectSelect = document.getElementById('project-select');
+                const contestId = document.getElementById('score-entry-contest-id').value;
+                
+                if (!playerName) {
+                    showError('请输入选手姓名');
+                    return;
+                }
+                
+                // 验证成绩格式（传入项目名称）
+                const validation = this.validateTimesFormat(timesInput, projectSelect.value);
+                if (!validation.valid) {
+                    showError(validation.message);
+                    return;
+                }
+                
+                const parsedTimes = validation.times;
+                
+                try {
+                    // 获取当前项目的所有成绩
+                    const contests = await contestsAPI.getContests();
+                    const contest = contests.find(c => c._id === contestId);
+                    const projectData = contest.contests.find(c => c.project === projectSelect.value);
+                    const currentResults = projectData ? projectData.results || [] : [];
+                    
+                    // 更新成绩
+                    if (index < currentResults.length) {
+                        currentResults[index] = {
+                            name: playerName,
+                            times: parsedTimes,
+                            round: parseInt(roundInput),
+                            submittedAt: new Date().toISOString(),
+                            submittedBy: 'admin'
+                        };
+                        
+                        // 提交到数据库
+                        await contestScoresAPI.submitScores(contestId, projectSelect.value, currentResults);
+                        
+                        // 刷新已录入成绩列表
+                        await this.loadEnteredScores(contestId, projectSelect.value);
+                        
+                        showSuccess('成绩更新成功');
+                    }
+                } catch (error) {
+                    showError('更新成绩失败: ' + error.message);
+                }
+            }
+
+            // 取消成绩编辑
+            cancelScoreEdit(index) {
+                const scoreItem = document.querySelector(`[data-index="${index}"]`);
+                if (!scoreItem) return;
+                
+                // 恢复原始显示
+                scoreItem.classList.remove('editing');
+                scoreItem.querySelector('.score-info').style.display = 'flex';
+                scoreItem.querySelector('.score-actions').style.display = 'flex';
+                scoreItem.querySelector('.score-edit-form').remove();
+            }
+
+            // 删除成绩
+            async deleteScore(index) {
+                if (!confirm('确定要删除这条成绩记录吗？')) return;
+                
+                const projectSelect = document.getElementById('project-select');
+                const contestId = document.getElementById('score-entry-contest-id').value;
+                
+                try {
+                    // 获取当前项目的所有成绩
+                    const contests = await contestsAPI.getContests();
+                    const contest = contests.find(c => c._id === contestId);
+                    const projectData = contest.contests.find(c => c.project === projectSelect.value);
+                    const currentResults = projectData ? projectData.results || [] : [];
+                    
+                    // 删除指定成绩
+                    if (index < currentResults.length) {
+                        currentResults.splice(index, 1);
+                        
+                        // 提交到数据库
+                        await contestScoresAPI.submitScores(contestId, projectSelect.value, currentResults);
+                        
+                        // 刷新已录入成绩列表
+                        await this.loadEnteredScores(contestId, projectSelect.value);
+                        
+                        showSuccess('成绩删除成功');
+                    }
+                } catch (error) {
+                    showError('删除成绩失败: ' + error.message);
+                }
+            }
+
+            // 保存项目成绩
+            async saveProjectScores(form) {
+                const projectName = form.dataset.project;
+                const contestId = document.getElementById('score-entry-contest-id').value;
+                
+                if (!contestId) {
+                    showError('周赛ID不存在');
+                    return;
+                }
+                
+                // 收集选手数据
+                const players = [];
+                const playerGroups = form.querySelectorAll('.player-input-group');
+                
+                playerGroups.forEach(group => {
+                    const nameInput = group.querySelector('.player-name');
+                    const timeInputs = group.querySelectorAll('.player-time');
+                    
+                    const name = nameInput.value.trim();
+                    if (!name) return; // 跳过没有姓名的选手
+                    
+                    const times = [];
+                    timeInputs.forEach(input => {
+                        const time = input.value.trim();
+                        if (time) times.push(time);
+                    });
+                    
+                    players.push({
+                        name: name,
+                        times: times
+                    });
+                });
+
+                if (players.length === 0) {
+                    showError('请至少录入一个选手的成绩');
+                    return;
+                }
+
+                try {
+                    // 直接提交成绩
+                    await contestScoresAPI.submitScores(contestId, projectName, players);
+                    this.loadContests(); // 重新加载列表
+                    closeScoreEntryModal(); // 关闭模态框
+                } catch (error) {
+                    showError('保存成绩失败: ' + error.message);
+                }
+            }
+
+            // 渲染选手输入框
+            renderPlayerInputs(results) {
+                const container = document.getElementById('score-entry-players');
+                container.innerHTML = '';
+
+                // 如果有现有成绩，显示它们
+                if (results && results.length > 0) {
+                    results.forEach((result, index) => {
+                        this.addPlayerInput(result.name, result.times, index);
+                    });
+                } else {
+                    // 默认添加3个空输入框
+                    for (let i = 0; i < 3; i++) {
+                        this.addPlayerInput('', [], i);
+                    }
+                }
+            }
+
+            // 添加选手输入框
+            addPlayerInput(name = '', times = [], index = null) {
+                const container = document.getElementById('score-entry-players');
+                const playerIndex = index !== null ? index : container.children.length;
+                
+                const playerDiv = document.createElement('div');
+                playerDiv.className = 'player-input-group';
+                playerDiv.innerHTML = `
+                    <input type="text" placeholder="选手姓名" value="${name}" class="form-control player-name" data-index="${playerIndex}">
+                    <input type="text" placeholder="成绩1" value="${times[0] || ''}" class="form-control player-time" data-index="${playerIndex}" data-time="0">
+                    <input type="text" placeholder="成绩2" value="${times[1] || ''}" class="form-control player-time" data-index="${playerIndex}" data-time="1">
+                    <input type="text" placeholder="成绩3" value="${times[2] || ''}" class="form-control player-time" data-index="${playerIndex}" data-time="2">
+                    <input type="text" placeholder="成绩4" value="${times[3] || ''}" class="form-control player-time" data-index="${playerIndex}" data-time="3">
+                    <input type="text" placeholder="成绩5" value="${times[4] || ''}" class="form-control player-time" data-index="${playerIndex}" data-time="4">
+                    <button type="button" class="btn btn-danger" onclick="removePlayerInput(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                
+                container.appendChild(playerDiv);
+            }
+
+            // 保存成绩
+            async saveScores() {
+                const contestId = document.getElementById('score-entry-contest-id').value;
+                const projectName = document.getElementById('score-entry-project-name').value;
+                
+                // 收集所有选手数据
+                const players = [];
+                const playerGroups = document.querySelectorAll('.player-input-group');
+                
+                playerGroups.forEach(group => {
+                    const nameInput = group.querySelector('.player-name');
+                    const timeInputs = group.querySelectorAll('.player-time');
+                    
+                    const name = nameInput.value.trim();
+                    if (!name) return; // 跳过没有姓名的选手
+                    
+                    const times = [];
+                    timeInputs.forEach(input => {
+                        const time = input.value.trim();
+                        if (time) times.push(time);
+                    });
+                    
+                    if (times.length > 0) {
+                        players.push({
+                            name: name,
+                            times: times
+                        });
+                    }
+                });
+
+                if (players.length === 0) {
+                    showError('请至少录入一个选手的成绩');
+                    return;
+                }
+
+                try {
+                    // 这里需要调用API更新周赛记录
+                    // 由于当前是模拟数据，我们直接更新本地显示
+                    showSuccess(`成功录入 ${players.length} 名选手的成绩`);
+                    this.closeScoreEntryModal();
+                    this.loadContests(); // 重新加载列表
+                } catch (error) {
+                    showError('保存成绩失败: ' + error.message);
+                }
+            }
+        }
+
+
+        // 切换更多项目显示
+        function toggleMoreProjects() {
+            const moreProjects = document.getElementById('more-projects');
+            const toggleBtn = document.querySelector('.more-projects-toggle .btn');
+            const icon = document.getElementById('more-projects-icon');
+            const text = document.getElementById('more-projects-text');
+            const toggleContainer = document.querySelector('.more-projects-toggle');
+            
+            if (moreProjects.classList.contains('hidden') || moreProjects.style.display === 'none') {
+                // 展开
+                moreProjects.style.display = 'block';
+                moreProjects.classList.remove('hidden');
+                moreProjects.classList.add('visible');
+                
+                // 立即更新按钮状态
+                toggleBtn.classList.add('expanded');
+                icon.className = 'fas fa-chevron-up';
+                text.textContent = '收起';
+                
+                // 将按钮移动到隐藏项目区域的最后
+                const hiddenRow = moreProjects.querySelector('.checkbox-row');
+                if (hiddenRow && toggleContainer) {
+                    hiddenRow.appendChild(toggleContainer);
+                }
+            } else {
+                // 收起
+                moreProjects.classList.remove('visible');
+                moreProjects.classList.add('hidden');
+                
+                // 立即更新按钮状态
+                toggleBtn.classList.remove('expanded');
+                icon.className = 'fas fa-chevron-down';
+                text.textContent = '更多';
+                
+                // 延迟隐藏元素，确保动画完成
+                setTimeout(() => {
+                    moreProjects.style.display = 'none';
+                }, 300);
+                
+                // 将按钮移回原位置（SQ1项目旁边）
+                const sq1Checkbox = document.querySelector('input[value="SQ1"]');
+                if (sq1Checkbox && toggleContainer) {
+                    const sq1Row = sq1Checkbox.closest('.checkbox-row');
+                    if (sq1Row) {
+                        sq1Row.appendChild(toggleContainer);
+                    }
+                }
+            }
+        }
+
+        // 添加选手输入框
+        function addPlayerInput(projectName) {
+            if (window.adminManager) {
+                window.adminManager.addPlayerInput(projectName);
+            }
+        }
+
+        // 添加选手输入框到指定项目
+        function addPlayerInputToProject(projectName) {
+            const activePanel = document.querySelector('.project-panel.active');
+            if (activePanel) {
+                const playerInputs = activePanel.querySelector('.player-inputs');
+                if (playerInputs) {
+                    const newInputGroup = window.adminManager.generatePlayerInputGroup('', [], playerInputs.children.length);
+                    playerInputs.insertAdjacentHTML('beforeend', newInputGroup);
+                }
+            }
+        }
+
+        // 移除选手输入框
+        function removePlayerInput(button) {
+            const playerGroup = button.closest('.player-input-group');
+            if (playerGroup) {
+                playerGroup.remove();
+            }
+        }
+
+        // 关闭成绩录入模态框
+        function closeScoreEntryModal() {
+            const modal = document.getElementById('score-entry-modal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        // 关闭周赛编辑模态框
+        function closeContestEditModal() {
+            const modal = document.getElementById('contest-edit-modal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        // 添加项目到周赛
+        function addProjectToContest() {
+            const select = document.getElementById('new-project-select');
+            const selectedProject = select.value;
+            
+            if (!selectedProject) {
+                showError('请选择要添加的项目');
+                return;
+            }
+
+            // 检查项目是否已存在
+            const existingProjects = Array.from(document.querySelectorAll('.project-name')).map(el => el.textContent);
+            if (existingProjects.includes(selectedProject)) {
+                showError('该项目已存在');
+                return;
+            }
+
+            // 添加项目到列表
+            const projectsList = document.getElementById('projects-list');
+            const projectItem = document.createElement('div');
+            projectItem.className = 'project-item';
+            projectItem.setAttribute('data-project', selectedProject);
+            projectItem.innerHTML = `
+                <div class="project-info">
+                    <div class="project-name">${selectedProject}</div>
+                    <div class="project-stats">
+                        参赛人数: 0人
+                    </div>
+                </div>
+                <div class="project-actions">
+                    <!-- 眼睛按钮已隐藏 -->
+                </div>
+            `;
+            
+            projectsList.appendChild(projectItem);
+            
+            // 清空选择
+            select.value = '';
+            adminManager.updateAddProjectButton();
+            
+            showSuccess(`项目 ${selectedProject} 添加成功`);
+        }
+
+        // 保存周赛编辑
+        function saveContestEdit() {
+            const contestId = document.getElementById('contest-edit-id').value;
+            const week = document.getElementById('edit-week').value;
+            const date = document.getElementById('edit-date').value;
+
+            if (!week.trim()) {
+                showError('请输入周次');
+                return;
+            }
+
+            if (!date) {
+                showError('请选择日期');
+                return;
+            }
+
+            // 收集现有项目（保留原有成绩数据）
+            const existingProjects = [];
+            
+            // 获取当前周赛的完整数据
+            const currentContest = adminManager.contests.find(c => c._id === contestId);
+            if (!currentContest) {
+                showError('找不到周赛数据');
+                return;
+            }
+            
+            // 遍历界面上显示的项目，保留原有数据
+            Array.from(document.querySelectorAll('.project-item')).forEach(item => {
+                const projectName = item.querySelector('.project-name').textContent;
+                
+                // 从原数据中查找该项目的成绩
+                const existingProjectData = currentContest.contests.find(c => c.project === projectName);
+                
+                existingProjects.push({
+                    project: projectName,
+                    results: existingProjectData ? existingProjectData.results || [] : []
+                });
+            });
+
+            // 更新周赛数据
+            const updatedContest = {
+                week: week.trim(),
+                date: date,
+                contests: existingProjects
+            };
+
+            // 调用API更新
+            adminManager.updateContestData(contestId, updatedContest);
+        }
+
+        // 查看项目成绩
+        function viewProjectScores(project) {
+            showError('查看成绩功能开发中');
+        }
+
+        // 创建全局管理实例
+        window.adminManager = new AdminManager();
+
+        // 快速录入成绩
+        window.quickAddScore = function() {
+            adminManager.quickAddScore();
+        };
+
+        // 编辑成绩
+        window.editScore = function(index) {
+            adminManager.editScore(index);
+        };
+
+        // 保存成绩编辑
+        window.saveScoreEdit = function(index) {
+            adminManager.saveScoreEdit(index);
+        };
+
+        // 取消成绩编辑
+        window.cancelScoreEdit = function(index) {
+            adminManager.cancelScoreEdit(index);
+        };
+
+        // 删除成绩
+        window.deleteScore = function(index) {
+            adminManager.deleteScore(index);
+        };
+
+        // 切换编辑模式
+        window.toggleEditMode = function() {
+            adminManager.toggleEditMode();
+        };
+        window.toggleMoreProjects = toggleMoreProjects;
+        window.addPlayerInput = addPlayerInput;
+        window.removePlayerInput = removePlayerInput;
+        window.closeScoreEntryModal = closeScoreEntryModal;
+        window.closeContestEditModal = closeContestEditModal;
+        window.addProjectToContest = addProjectToContest;
+        window.saveContestEdit = saveContestEdit;
+        window.viewProjectScores = viewProjectScores;
+
+        // 绑定成绩录入表单提交事件
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置日期输入框默认为当天
+            const dateInput = document.getElementById('contest-date');
+            if (dateInput) {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                dateInput.value = `${year}-${month}-${day}`;
+            }
+
+            // 使用事件委托处理动态生成的表单
+            document.addEventListener('submit', function(e) {
+                if (e.target.classList.contains('score-entry-form')) {
+                    e.preventDefault();
+                    if (window.adminManager) {
+                        window.adminManager.saveProjectScores(e.target);
+                    }
+                }
+            });
+
+            // 点击模态框背景关闭模态框
+            const modal = document.getElementById('score-entry-modal');
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        closeScoreEntryModal();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

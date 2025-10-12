@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>周赛记录 - FCA Website</title>
+    <meta name="description" content="复旦大学魔方社周赛记录">
+    <meta name="keywords" content="FCA,魔方,周赛,记录,成绩,排名">
+    
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="魔方周赛">
+    
+    <!-- 图标 -->
+    <link rel="icon" type="image/x-icon" href="assets/images/fdu.ico">
+    
+    <!-- 样式文件 -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    
+    <!-- 字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-cube"></i>
+                FCA Website
+            </a>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    首页
+                </a>
+                <a href="school-records.html" class="nav-link">
+                    <i class="fas fa-trophy"></i>
+                    校记录
+                </a>
+                <a href="weekly-contests.html" class="nav-link active">
+                    <i class="fas fa-calendar-week"></i>
+                    周赛记录
+                </a>
+                <a href="admin.html" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    管理后台
+                </a>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="main-content">
+        <!-- 页面头部 -->
+        <section class="page-header">
+            <div class="container">
+                <div class="header-content">
+                    <h1 class="page-title">
+                        <i class="fas fa-calendar-week"></i>
+                        Weekly Contests
+                    </h1>
+                    <p class="page-subtitle">FCA每周魔方比赛成绩与排名</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 筛选器 -->
+        <section class="filters">
+            <div class="container">
+                <div class="filter-group">
+                    <div class="filter-item">
+                        <label for="week-filter">周次</label>
+                        <select id="week-filter" class="filter-select">
+                            <option value="">全部周次</option>
+                            <!-- 动态生成周次选项 -->
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <button class="filter-reset" onclick="resetFilters()">
+                            <i class="fas fa-refresh"></i>
+                            重置筛选
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 周赛记录展示 -->
+        <section class="contests-section">
+            <div class="container">
+                <div class="contests-timeline" id="contests-timeline">
+                    <!-- 周赛记录将通过 JavaScript 动态生成 -->
+                </div>
+                
+                <!-- 无数据提示 -->
+                <div class="no-data" id="no-data" style="display: none;">
+                    <i class="fas fa-search"></i>
+                    <h3>暂无匹配的周赛记录</h3>
+                    <p>请尝试调整筛选条件</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>FCA Website</h4>
+                    <p>复旦大学魔方社网站</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="index.html">首页</a></li>
+                        <li><a href="school-records.html">校记录</a></li>
+                        <li><a href="weekly-contests.html">周赛记录</a></li>
+                        <li><a href="admin.html">管理后台</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>联系我们</h4>
+                    <p>如有问题，请联系FCA管理员</p>
+                    <div class="social-links">
+                        <a href="https://space.bilibili.com/1299547652" target="_blank" class="social-link" title="Bilibili">
+                            <i class="fab fa-bilibili"></i>
+                        </a>
+                        <a href="https://github.com/huizhiLLL/FCA-WeeklyContests" target="_blank" class="social-link" title="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FCA Website. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script type="module" src="assets/js/app.js"></script>
+    <script type="module" src="assets/js/pwa.js"></script>
+    <script type="module">
+        // 初始化周赛记录组件
+        import { ContestsComponent } from './assets/js/components/contests.js';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const contestsTimeline = document.getElementById('contests-timeline');
+            if (contestsTimeline) {
+                const contestsComponent = new ContestsComponent(contestsTimeline);
+                contestsComponent.init();
+                
+                // 将组件实例保存到全局变量，供HTML中的onclick事件使用
+                window.contestsComponent = contestsComponent;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>首页 - FCA Website</title>
+    <meta name="description" content="复旦大学魔方社官方成绩记录系统">
+    <meta name="keywords" content="FCA,魔方,周赛,记录,校记录,成绩管理">
+    
+    <!-- PWA 支持 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="魔方周赛">
+    
+    <!-- 图标 -->
+    <link rel="icon" type="image/x-icon" href="assets/images/fdu.ico">
+    
+    <!-- 样式文件 -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    
+    <!-- 字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-cube"></i>
+                FCA Website
+            </a>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link active">
+                    <i class="fas fa-home"></i>
+                    首页
+                </a>
+                <a href="school-records.html" class="nav-link">
+                    <i class="fas fa-trophy"></i>
+                    校记录
+                </a>
+                <a href="weekly-contests.html" class="nav-link">
+                    <i class="fas fa-calendar-week"></i>
+                    周赛记录
+                </a>
+                <a href="admin.html" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    管理后台
+                </a>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="main-content">
+        <!-- 英雄区域 -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="gradient-text">FCA Website</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Records & Weekly Contests ...
+                </p>
+            </div>
+            <div class="hero-visual">
+                <div class="cube-animation">
+                    <div class="cube">
+                        <div class="face front"></div>
+                        <div class="face back"></div>
+                        <div class="face right"></div>
+                        <div class="face left"></div>
+                        <div class="face top"></div>
+                        <div class="face bottom"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 功能模块 -->
+        <section class="features">
+            <div class="container">
+                <h2 class="section-title">功能模块</h2>
+                <div class="features-grid">
+                    <div class="feature-card" onclick="location.href='school-records.html'">
+                        <div class="feature-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <h3>FCA Records</h3>
+                        <p>查看提交校记录</p>
+                        <div class="feature-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card" onclick="location.href='weekly-contests.html'">
+                        <div class="feature-icon">
+                            <i class="fas fa-calendar-week"></i>
+                        </div>
+                        <h3>周赛记录</h3>
+                        <p>浏览记录周赛成绩</p>
+                        <div class="feature-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card" onclick="location.href='admin.html'">
+                        <div class="feature-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <h3>管理后台</h3>
+                        <p>系统管理和数据维护</p>
+                        <div class="feature-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>FCA Website</h4>
+                    <p>复旦大学魔方社网站</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="index.html">首页</a></li>
+                        <li><a href="school-records.html">校记录</a></li>
+                        <li><a href="weekly-contests.html">周赛记录</a></li>
+                        <li><a href="admin.html">管理后台</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>联系我们</h4>
+                    <p>如有问题，请联系FCA管理员</p>
+                    <div class="social-links">
+                        <a href="https://space.bilibili.com/1299547652" target="_blank" class="social-link" title="Bilibili">
+                            <i class="fab fa-bilibili"></i>
+                        </a>
+                        <a href="https://github.com/huizhiLLL/FCA-WeeklyContests" target="_blank" class="social-link" title="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FCA Website. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script type="module" src="assets/js/app.js"></script>
+    <script type="module" src="assets/js/pwa.js"></script>
+</body>
+</html>

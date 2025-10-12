@@ -1,0 +1,54 @@
+{
+  "name": "FCA Website",
+  "short_name": "FCA",
+  "description": "复旦大学魔方社官方成绩记录系统",
+  "version": "1.0.0",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "categories": ["sports", "education", "productivity"],
+  "icons": [
+    {
+      "src": "assets/images/fdu.ico",
+      "sizes": "any",
+      "type": "image/x-icon",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+
+  ],
+  "shortcuts": [
+    {
+      "name": "FCA Records",
+      "short_name": "Records",
+      "description": "查看校记录",
+      "url": "/school-records.html",
+      "icons": [
+
+      ]
+    },
+    {
+      "name": "Weekly Contests",
+      "short_name": "Contests",
+      "description": "查看周赛记录",
+      "url": "/weekly-contests.html",
+      "icons": [
+
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
+}
