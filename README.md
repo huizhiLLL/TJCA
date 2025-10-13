@@ -1,4 +1,4 @@
-### [TJCA Website](http://tjca.hzcubing.club)
+## [TJCA Website](http://tjca.hzcubing.club)
 ---
 
 **同济大学魔方社官方网站**
