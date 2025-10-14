@@ -5,8 +5,7 @@
 
 import { RecordsComponent } from './components/records.js';
 import { ContestsComponent } from './components/contests.js';
-import { animateCounter, showError } from './utils.js';
-import { mockData } from './mockData.js';
+import { showError } from './utils.js';
 
 /**
  * 首页功能模块
@@ -19,65 +18,7 @@ class HomePage {
      * 初始化首页
      */
     async init() {
-        this.loadRecentActivity();
-        this.bindEvents();
-    }
-
-
-    /**
-     * 加载最新动态
-     */
-    loadRecentActivity() {
-        const activityList = document.getElementById('recent-activity-list');
-        if (!activityList) return;
-
-        const activities = [
-            {
-                type: 'record',
-                title: '---',
-                description: '---',
-                time: '2小时前'
-            },
-            {
-                type: 'contest',
-                title: '---',
-                description: '---',
-                time: '1天前'
-            },
-            {
-                type: 'achievement',
-                title: '---',
-                description: '---',
-                time: '3天前'
-            }
-        ];
-
-        activityList.innerHTML = activities.map(activity => `
-            <div class="activity-item fade-in-up">
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-                    <h4 style="color: var(--primary-color); font-weight: 600;">${activity.title}</h4>
-                    <span style="color: var(--text-secondary); font-size: 0.875rem;">${activity.time}</span>
-                </div>
-                <p style="color: var(--text-secondary); margin: 0;">${activity.description}</p>
-            </div>
-        `).join('');
-    }
-
-    /**
-     * 绑定事件
-     */
-    bindEvents() {
-        // 功能卡片点击事件
-        const featureCards = document.querySelectorAll('.feature-card');
-        featureCards.forEach(card => {
-            card.addEventListener('click', (e) => {
-                const target = e.currentTarget;
-                if (target.onclick) {
-                    // 如果卡片有 onclick 属性，执行它
-                    eval(target.onclick);
-                }
-            });
-        });
+        // 首页目前无需特殊初始化逻辑
     }
 }
 
@@ -162,8 +103,7 @@ class App {
      * 初始化管理后台页面
      */
     initializeAdminPage() {
-        // 管理后台页面逻辑
-        console.log('管理后台页面初始化');
+        // 管理后台页面逻辑将在未来实现
     }
 
     /**
@@ -267,16 +207,14 @@ class App {
      * 处理页面隐藏
      */
     handlePageHidden() {
-        // 页面隐藏时的处理逻辑
-        console.log('页面隐藏');
+        // 页面隐藏时的处理逻辑将在未来实现
     }
 
     /**
      * 处理页面显示
      */
     handlePageVisible() {
-        // 页面显示时的处理逻辑
-        console.log('页面显示');
+        // 页面显示时的处理逻辑将在未来实现
     }
 
     /**
@@ -297,37 +235,6 @@ class App {
         };
     }
 }
-
-
-/**
- * 导出数据功能（未来扩展）
- * @param {string} type - 数据类型
- */
-function exportData(type) {
-    let data, filename;
-    
-    if (type === 'school-records') {
-        data = window.recordsComponent?.records || [];
-        filename = 'school-records.json';
-    } else if (type === 'weekly-contests') {
-        data = window.contestsComponent?.contests || [];
-        filename = 'weekly-contests.json';
-    } else {
-        showError('未知的数据类型');
-        return;
-    }
-    
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-}
-
-// 将全局函数挂载到 window 对象
-window.exportData = exportData;
 
 // 页面加载完成后初始化应用
 document.addEventListener('DOMContentLoaded', () => {

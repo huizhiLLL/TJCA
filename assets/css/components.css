@@ -890,6 +890,33 @@
     border-bottom: 1px solid var(--gray-200);
     padding: 0;
     margin: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 4px;
+    /* 滚动条样式优化 */
+    scrollbar-width: thin;
+    scrollbar-color: var(--gray-300) var(--gray-100);
+    /* 平滑滚动 */
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+}
+
+/* Webkit浏览器滚动条样式 */
+.project-tabs::-webkit-scrollbar {
+    height: 6px;
+}
+
+.project-tabs::-webkit-scrollbar-track {
+    background: var(--gray-100);
+}
+
+.project-tabs::-webkit-scrollbar-thumb {
+    background: var(--gray-300);
+    border-radius: 3px;
+}
+
+.project-tabs::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-400);
 }
 
 .project-tab {

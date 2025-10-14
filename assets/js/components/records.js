@@ -1,19 +1,17 @@
 /**
  * 校记录组件
- * 处理校记录的显示和交互逻辑
+ * 处理校记录的静态数据显示
  */
 
-import { formatTime, showError, showSuccess } from '../utils.js';
-import { recordsAPI } from '../api.js';
+import { formatTime } from '../utils.js';
 import { mockData } from '../mockData.js';
 
 /**
  * 校记录组件类
  */
 export class RecordsComponent {
-    constructor(container, apiClient = recordsAPI) {
+    constructor(container) {
         this.container = container;
-        this.apiClient = apiClient;
         this.currentView = 'current';
         this.records = [];
     }
@@ -27,26 +25,18 @@ export class RecordsComponent {
     }
 
     /**
-     * 加载校记录
-     * @param {Object} filters - 筛选条件
+     * 加载校记录（静态数据）
      */
-    async loadRecords(filters = {}) {
-        try {
-            this.showLoading();
-            
-            if (this.currentView === 'current') {
-                // 使用静态数据
-                this.records = mockData.schoolRecords;
-            } else {
-                // 历史记录使用空数据
-                this.records = mockData.historyRecords;
-            }
-            
-            this.renderRecords();
-        } catch (error) {
-            console.error('加载校记录失败:', error);
-            this.showError('加载校记录失败: ' + error.message);
+    async loadRecords() {
+        if (this.currentView === 'current') {
+            // 使用静态数据
+            this.records = mockData.schoolRecords;
+        } else {
+            // 历史记录使用空数据
+            this.records = mockData.historyRecords;
         }
+        
+        this.renderRecords();
     }
 
     /**
@@ -194,19 +184,13 @@ export class RecordsComponent {
             currentBtn.classList.add('active');
             historyBtn.classList.remove('active');
             if (historyFilterGroup) historyFilterGroup.style.display = 'none';
-            this.loadRecords();
         } else {
             historyBtn.classList.add('active');
             currentBtn.classList.remove('active');
             if (historyFilterGroup) historyFilterGroup.style.display = 'flex';
-            
-            // 加载历史记录，默认三阶
-            const projectFilter = document.getElementById('project-filter');
-            const filters = {
-                project: projectFilter?.value || '三阶'
-            };
-            this.loadRecords(filters);
         }
+        
+        this.loadRecords();
     }
 
     /**
@@ -225,96 +209,14 @@ export class RecordsComponent {
             historyBtn.addEventListener('click', () => this.switchRecordType('history'));
         }
 
-        // 项目筛选器
+        // 项目筛选器（历史记录）
         const projectFilter = document.getElementById('project-filter');
         if (projectFilter) {
-            projectFilter.addEventListener('change', (e) => {
+            projectFilter.addEventListener('change', () => {
                 if (this.currentView === 'history') {
-                    this.loadRecords({ project: e.target.value });
+                    this.loadRecords();
                 }
             });
-        }
-    }
-
-    /**
-     * 显示加载状态
-     */
-    showLoading() {
-        const tableBody = this.currentView === 'current' ? 
-            document.getElementById('current-records-table-body') :
-            document.getElementById('history-records-table-body');
-        
-        if (tableBody) {
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="7" style="text-align: center; padding: 40px;">
-                        <div class="loading"></div>
-                        <p style="margin-top: 16px; color: var(--text-secondary);">加载中...</p>
-                    </td>
-                </tr>
-            `;
-        }
-    }
-
-    /**
-     * 显示错误信息
-     * @param {string} message - 错误消息
-     */
-    showError(message) {
-        const tableBody = this.currentView === 'current' ? 
-            document.getElementById('current-records-table-body') :
-            document.getElementById('history-records-table-body');
-        
-        if (tableBody) {
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="7" style="text-align: center; padding: 40px; color: var(--danger-color);">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 16px; display: block;"></i>
-                        <h3 style="margin: 0 0 8px 0;">加载失败</h3>
-                        <p style="margin: 0; font-size: 0.9rem;">${message}</p>
-                    </td>
-                </tr>
-            `;
-        }
-    }
-
-    /**
-     * 创建新记录
-     * @param {Object} recordData - 记录数据
-     */
-    async createRecord(recordData) {
-        try {
-            await this.apiClient.createRecord(recordData);
-            await this.loadRecords();
-        } catch (error) {
-            // 错误已在 API 中处理
-        }
-    }
-
-    /**
-     * 更新记录
-     * @param {string} id - 记录ID
-     * @param {Object} recordData - 更新数据
-     */
-    async updateRecord(id, recordData) {
-        try {
-            await this.apiClient.updateRecord(id, recordData);
-            await this.loadRecords();
-        } catch (error) {
-            // 错误已在 API 中处理
-        }
-    }
-
-    /**
-     * 删除记录
-     * @param {string} id - 记录ID
-     */
-    async deleteRecord(id) {
-        try {
-            await this.apiClient.deleteRecord(id);
-            await this.loadRecords();
-        } catch (error) {
-            // 错误已在 API 中处理
         }
     }
 }

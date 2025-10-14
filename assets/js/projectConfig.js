@@ -120,6 +120,22 @@ export const PROJECT_CONFIG = {
         timeFormat: "standard",
         displayName: "SQ1",
         description: "5把成绩，去掉最好和最差，计算中间3把的平均值"
+    },
+    
+    // 趣味项目 - 单次成绩排名
+    "套拧": {
+        attempts: 1,
+        scoringMethod: "single", // 单次成绩排名
+        timeFormat: "extended",
+        displayName: "套拧",
+        description: "1次成绩，按单次成绩排名"
+    },
+    "黄色挡板": {
+        attempts: 1,
+        scoringMethod: "single",
+        timeFormat: "extended",
+        displayName: "黄色挡板",
+        description: "1次成绩，按单次成绩排名"
     }
 };
 
@@ -177,6 +193,7 @@ export function getProjectsByCategory() {
         "速拧项目": ["三阶", "二阶", "四阶", "五阶", "三阶单手"],
         "大阶项目": ["六阶", "七阶"],
         "盲拧项目": ["三阶盲拧", "四阶盲拧", "五阶盲拧"],
-        "特殊项目": ["最少步", "魔表", "五魔方", "金字塔", "斜转", "SQ1"]
+        "特殊项目": ["最少步", "魔表", "五魔方", "金字塔", "斜转", "SQ1"],
+        "趣味项目": ["套拧", "黄色挡板"]
     };
 }

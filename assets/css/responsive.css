@@ -110,10 +110,14 @@
     .project-tabs {
         overflow-x: auto;
         white-space: nowrap;
+        -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+        scroll-behavior: smooth; /* 平滑滚动 */
     }
     
     .project-tab {
         flex-shrink: 0;
+        font-size: 0.9rem; /* 移动端稍微缩小字体 */
+        padding: var(--spacing-sm) var(--spacing-md); /* 减小内边距 */
     }
 }
 

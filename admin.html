@@ -1333,6 +1333,17 @@
                                             <span>五阶盲拧</span>
                                         </label>
                                     </div>
+                                    <!-- 趣味项目 -->
+                                    <div class="checkbox-row">
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="contest-projects" value="套拧">
+                                            <span>套拧 🎮</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="contest-projects" value="黄色挡板">
+                                            <span>黄色挡板 🎮</span>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1430,6 +1441,8 @@
                                                 <option value="金字塔">金字塔</option>
                                                 <option value="斜转">斜转</option>
                                                 <option value="SQ1">SQ1</option>
+                                                <option value="套拧">套拧 🎮</option>
+                                                <option value="黄色挡板">黄色挡板 🎮</option>
                                             </select>
                                         </div>
                                         <div class="form-group">
@@ -1741,7 +1754,7 @@
     <script type="module" src="assets/js/pwa.js"></script>
     <script type="module">
         // 管理后台专用脚本
-        import { recordsAPI, contestsAPI, contestScoresAPI } from './assets/js/api.js';
+        import { contestsAPI, contestScoresAPI } from './assets/js/api.js';
         import { showSuccess, showError, animateCounter } from './assets/js/utils.js';
         import { getProjectConfig, getProjectAttempts, getProjectScoringMethod, getProjectTimeFormat, getAllProjects, getProjectsByCategory } from './assets/js/projectConfig.js';
         import { parseTimeString, validateTimeForProject, getTimeInputPlaceholder, formatTimeDisplay } from './assets/js/timeUtils.js';
@@ -1947,8 +1960,11 @@
                 }
             }
 
+            // 校记录管理功能已停用
             async loadRecords() {
-                const recordsList = document.getElementById('records-list');
+                // 功能已停用 - 校记录改为静态数据展示
+                return;
+                /* const recordsList = document.getElementById('records-list');
                 if (!recordsList) return;
 
                 try {
@@ -1961,7 +1977,7 @@
                     this.renderRecords(records);
                 } catch (error) {
                     recordsList.innerHTML = '<div class="error">加载失败: ' + error.message + '</div>';
-                }
+                } */
             }
 
             renderRecords(records) {
@@ -2095,13 +2111,16 @@
                     competition: formData.get('record-competition') || document.getElementById('record-competition').value
                 };
 
-                try {
+                // 功能已停用 - 校记录改为静态数据展示
+                showError('校记录管理功能已停用，请直接修改 mockData.js 文件');
+                return;
+                /* try {
                     await recordsAPI.createRecord(recordData);
                     form.reset();
                     this.loadRecords();
                 } catch (error) {
                     // 错误已在 API 中处理
-                }
+                } */
             }
 
             async addContest() {
@@ -2156,14 +2175,17 @@
             }
 
             async deleteRecord(id) {
-                if (confirm('确定要删除这条记录吗？')) {
+                // 功能已停用 - 校记录改为静态数据展示
+                showError('校记录管理功能已停用，请直接修改 mockData.js 文件');
+                return;
+                /* if (confirm('确定要删除这条记录吗？')) {
                     try {
                         await recordsAPI.deleteRecord(id);
                         this.loadRecords();
                     } catch (error) {
                         // 错误已在 API 中处理
                     }
-                }
+                } */
             }
 
             async editContest(id) {

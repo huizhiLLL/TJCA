@@ -122,93 +122,6 @@ export class APIClient {
 // 创建全局 API 客户端实例
 export const apiClient = new APIClient();
 
-/**
- * 校记录相关 API
- */
-export const recordsAPI = {
-    /**
-     * 获取校记录列表
-     * @param {Object} params - 查询参数
-     * @returns {Promise} 校记录列表
-     */
-    async getRecords(params = {}) {
-        try {
-            const response = await apiClient.get('/get-records', params);
-            return response.data || [];
-        } catch (error) {
-            showError('获取校记录失败: ' + error.message);
-            throw error;
-        }
-    },
-
-    /**
-     * 获取当前记录
-     * @returns {Promise} 当前记录列表
-     */
-    async getCurrentRecords() {
-        return this.getRecords({ isCurrent: true });
-    },
-
-    /**
-     * 获取历史记录
-     * @param {string} project - 项目名称
-     * @returns {Promise} 历史记录列表
-     */
-    async getHistoryRecords(project = '') {
-        const params = { isCurrent: false };
-        if (project) params.project = project;
-        return this.getRecords(params);
-    },
-
-    /**
-     * 创建校记录
-     * @param {Object} record - 校记录数据
-     * @returns {Promise} 创建结果
-     */
-    async createRecord(record) {
-        try {
-            const response = await apiClient.post('/create-record', record);
-            showSuccess('校记录创建成功');
-            return response.data;
-        } catch (error) {
-            showError('创建校记录失败: ' + error.message);
-            throw error;
-        }
-    },
-
-    /**
-     * 更新校记录
-     * @param {string} id - 记录ID
-     * @param {Object} record - 更新数据
-     * @returns {Promise} 更新结果
-     */
-    async updateRecord(id, record) {
-        try {
-            const response = await apiClient.post('/update-record', { _id: id, ...record });
-            showSuccess('校记录更新成功');
-            return response.data;
-        } catch (error) {
-            showError('更新校记录失败: ' + error.message);
-            throw error;
-        }
-    },
-
-    /**
-     * 删除校记录
-     * @param {string} id - 记录ID
-     * @returns {Promise} 删除结果
-     */
-    async deleteRecord(id) {
-        try {
-            const response = await apiClient.get(`/delete-record?_id=${id}`);
-            showSuccess('校记录删除成功');
-            return response.data;
-        } catch (error) {
-            showError('删除校记录失败: ' + error.message);
-            throw error;
-        }
-    }
-};
 
 /**
  * 周赛记录相关 API
@@ -332,31 +245,6 @@ export const mockAPI = {
     },
 
     /**
-     * 模拟获取校记录
-     * @param {Object} params - 查询参数
-     * @returns {Promise} 模拟数据
-     */
-    async getRecords(params = {}) {
-        await this.delay();
-        
-        let records = [...mockData.schoolRecords];
-        
-        if (params.isCurrent !== undefined) {
-            records = records.filter(r => r.isCurrent === (params.isCurrent === 'true'));
-        }
-        
-        if (params.project) {
-            records = records.filter(r => r.project === params.project);
-        }
-
-        return {
-            code: 200,
-            message: '获取校记录成功',
-            data: records
-        };
-    },
-
-    /**
      * 模拟获取周赛记录
      * @param {Object} params - 查询参数
      * @returns {Promise} 模拟数据
@@ -375,8 +263,7 @@ export const mockAPI = {
             message: '获取周赛记录成功',
             data: contests
         };
-    },
-
+    }
 };
 
 // 真实 API 客户端
@@ -412,51 +299,6 @@ export const realAPI = {
             console.error(`API请求失败 (${endpoint}):`, error);
             throw error;
         }
-    },
-
-    /**
-     * 获取校记录
-     * @param {Object} params - 查询参数
-     * @returns {Promise} 校记录数据
-     */
-    async getRecords(params = {}) {
-        const queryString = new URLSearchParams(params).toString();
-        const endpoint = `get-records${queryString ? `?${queryString}` : ''}`;
-        return await this.request(endpoint);
-    },
-
-    /**
-     * 创建校记录
-     * @param {Object} recordData - 记录数据
-     * @returns {Promise} 创建结果
-     */
-    async createRecord(recordData) {
-        return await this.request('create-record', {
-            method: 'POST',
-            body: JSON.stringify(recordData)
-        });
-    },
-
-    /**
-     * 更新校记录
-     * @param {string} id - 记录ID
-     * @param {Object} recordData - 更新数据
-     * @returns {Promise} 更新结果
-     */
-    async updateRecord(id, recordData) {
-        return await this.request('update-record', {
-            method: 'POST',
-            body: JSON.stringify({ _id: id, ...recordData })
-        });
-    },
-
-    /**
-     * 删除校记录
-     * @param {string} id - 记录ID
-     * @returns {Promise} 删除结果
-     */
-    async deleteRecord(id) {
-        return await this.request(`delete-record?_id=${id}`);
     },
 
     /**
