@@ -160,8 +160,14 @@ export class ContestsComponent {
         return `
             <div class="week-card fade-in-up">
                 <div class="week-header">
-                    <div class="week-title">${week.week}</div>
-                    <div class="week-date">${week.date}</div>
+                    <div class="week-info">
+                        <div class="week-title">${week.week}</div>
+                        <div class="week-date">${week.date}</div>
+                    </div>
+                    <button class="export-week-btn" onclick="exportWeekSummary('${week.week}')" title="导出赛果摘要">
+                        <i class="fas fa-download"></i>
+                        <span>导出赛果</span>
+                    </button>
                 </div>
                 
                 <!-- 项目标签栏 -->
@@ -664,6 +670,212 @@ export class ContestsComponent {
             // 错误已在 API 中处理
         }
     }
+
+    /**
+     * 导出某周的赛果摘要
+     * @param {string} weekName - 周次名称
+     */
+    exportWeekSummary(weekName) {
+        // 找到该周的周赛记录
+        const weekRecord = this.contests.find(contest => contest.week === weekName);
+        
+        if (!weekRecord) {
+            showError('未找到该周的比赛数据');
+            return;
+        }
+
+        // 调试：输出数据结构
+        console.log('周赛数据:', weekRecord);
+        
+        let summary = '';
+        
+        // 标题部分
+        summary += '═══════════════════════════════════\n';
+        summary += `   ${weekRecord.week} 赛果摘要\n`;
+        summary += `   日期：${weekRecord.date}\n`;
+        summary += '═══════════════════════════════════\n\n';
+        
+        // 统计参赛项目和人数
+        let totalProjects = 0;
+        let totalParticipants = new Set();
+        
+        // 周赛数据包含 contests 数组，每个元素是一个项目
+        const projectContests = weekRecord.contests || [];
+        
+        // 遍历每个项目
+        projectContests.forEach(contest => {
+            if (!contest.results || contest.results.length === 0) {
+                return; // 跳过没有参赛选手的项目
+            }
+            
+            totalProjects++;
+            contest.results.forEach(r => totalParticipants.add(r.name));
+            
+            const config = getProjectConfig(contest.project);
+            
+            // 项目标题
+            summary += `【${contest.project}】\n`;
+            
+            // 计算排名
+            const rankedResults = calculateProjectRanking(contest.results, contest.project);
+            
+            // 分离有效成绩和无效成绩
+            const validResults = rankedResults.filter(r => r.rank !== '-');
+            const invalidResults = rankedResults.filter(r => r.rank === '-');
+            
+            // 显示参赛人数
+            summary += `  参赛人数：${rankedResults.length}人\n`;
+            
+            // 如果有有效成绩，显示排名（如果人数<=5显示全部，否则只显示前三）
+            if (validResults.length > 0) {
+                const displayCount = validResults.length <= 5 ? validResults.length : 3;
+                const resultsToShow = validResults.slice(0, displayCount);
+                
+                resultsToShow.forEach(result => {
+                    const medal = result.rank === 1 ? '🥇' : result.rank === 2 ? '🥈' : result.rank === 3 ? '🥉' : '  ';
+                    summary += `    ${medal} ${result.rank}. ${result.name} - ${result.resultDisplay}`;
+                    
+                    // 如果有平均值，也显示（盲拧项目）
+                    if (result.averageDisplay && result.averageDisplay !== '-') {
+                        summary += ` (平均: ${result.averageDisplay})`;
+                    }
+                    summary += '\n';
+                });
+                
+                // 如果还有更多选手，显示提示
+                if (validResults.length > displayCount) {
+                    summary += `    ... 及其他 ${validResults.length - displayCount} 位选手\n`;
+                }
+            }
+            
+            // 如果有DNF选手，显示人数
+            if (invalidResults.length > 0) {
+                summary += `  DNF：${invalidResults.length}人\n`;
+            }
+            
+            // 如果完全没有有效成绩
+            if (validResults.length === 0) {
+                summary += '  暂无有效成绩\n';
+            }
+            
+            summary += '\n';
+        });
+        
+        // 底部统计
+        summary += '───────────────────────────────────\n';
+        summary += `总计：${totalProjects} 个项目，${totalParticipants.size} 位选手参赛\n`;
+        summary += '═══════════════════════════════════\n';
+        
+        // 复制到剪贴板
+        this.copyToClipboard(summary, weekName);
+    }
+
+    /**
+     * 复制文本到剪贴板
+     * @param {string} text - 要复制的文本
+     * @param {string} weekName - 周次名称
+     */
+    async copyToClipboard(text, weekName) {
+        try {
+            await navigator.clipboard.writeText(text);
+            
+            // 显示成功提示
+            const message = document.createElement('div');
+            message.className = 'copy-success-toast';
+            message.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                ${weekName} 赛果已复制到剪贴板！
+            `;
+            message.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #10b981;
+                color: white;
+                padding: 16px 24px;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-weight: 500;
+                transition: opacity 0.3s ease;
+            `;
+            document.body.appendChild(message);
+            
+            // 3秒后自动消失
+            setTimeout(() => {
+                message.style.opacity = '0';
+                setTimeout(() => message.remove(), 300);
+            }, 3000);
+            
+            // 同时在控制台输出，方便查看
+            console.log('=== 赛果摘要 ===\n' + text);
+        } catch (error) {
+            // 如果复制失败，显示在弹窗中
+            this.showSummaryModal(text, weekName);
+        }
+    }
+
+    /**
+     * 在模态框中显示赛果摘要
+     * @param {string} text - 赛果文本
+     * @param {string} weekName - 周次名称
+     */
+    showSummaryModal(text, weekName) {
+        const modal = document.createElement('div');
+        modal.className = 'summary-modal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        `;
+        modal.innerHTML = `
+            <div class="summary-modal-content" style="background: white; border-radius: 12px; padding: 24px; max-width: 600px; width: 90%; max-height: 80vh; display: flex; flex-direction: column;">
+                <div class="summary-modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 style="margin: 0;">${weekName} 赛果摘要</h3>
+                    <button class="summary-modal-close" onclick="this.closest('.summary-modal').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="summary-modal-body" style="flex: 1; overflow: auto; margin-bottom: 16px;">
+                    <textarea readonly style="width: 100%; height: 400px; font-family: monospace; padding: 12px; border: 1px solid #ddd; border-radius: 6px; resize: vertical;">${text}</textarea>
+                </div>
+                <div class="summary-modal-footer" style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button class="btn btn-primary" onclick="navigator.clipboard.writeText(this.closest('.summary-modal').querySelector('textarea').value).then(() => alert('已复制！'))" style="padding: 8px 16px; background: #1e40af; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                        <i class="fas fa-copy"></i> 复制
+                    </button>
+                    <button class="btn btn-secondary" onclick="this.closest('.summary-modal').remove()" style="padding: 8px 16px; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                        <i class="fas fa-times"></i> 关闭
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    /**
+     * 获取计分方式显示文本
+     * @param {string} method - 计分方式
+     * @returns {string} 显示文本
+     */
+    getScoringMethodDisplay(method) {
+        const map = {
+            'ao5': 'Ao5',
+            'mo3': 'Mo3',
+            'single': '单次',
+            'single_with_mo3': '单次+Mo3'
+        };
+        return map[method] || method;
+    }
 }
 
 // 全局函数，用于 HTML 中的 onclick 事件
@@ -676,5 +888,11 @@ window.switchProject = function(week, project) {
 window.resetFilters = function() {
     if (window.contestsComponent) {
         window.contestsComponent.resetFilters();
+    }
+};
+
+window.exportWeekSummary = function(weekName) {
+    if (window.contestsComponent) {
+        window.contestsComponent.exportWeekSummary(weekName);
     }
 };
