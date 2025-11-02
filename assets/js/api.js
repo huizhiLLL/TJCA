@@ -7,7 +7,7 @@ import { showError, showSuccess } from './utils.js';
 
 // API 基础配置
 const API_CONFIG = {
-    baseURL: 'https://tjcaback.hzcubing.club', // Sealos 云函数 URL
+    baseURL: 'https://back.tjca.club', // Sealos 云函数 URL
     timeout: 10000,
     retryCount: 3
 };
